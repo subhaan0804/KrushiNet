@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Listing</title>
+    <link rel="stylesheet" href="/css/createListing.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/popup.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="/js/sessionManager.js" defer></script>
+</head>
+<body>
+    <div class="gradient-container">
+        <div class="animated-blob blob1"></div>
+        <div class="animated-blob blob2"></div>
+        <div class="animated-blob blob3"></div>
+        <div class="animated-blob blob4"></div>
+    </div>
+    <header>
+        <div class="inhead">
+            <span class="logo">
+                <img src="/images/logo.png" alt="logo">
+                <h1>Krushi<span class="highlight">Net</span></h1>
+            </span>
+            <div class="container">
+                <nav>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="/marketplace/listings/view">Market</a></li>
+                        <li><a href="#">Market Analysis</a></li>
+                        <%- include('partials/authNav') %>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <main>
+        <form id="listing-form" action="/marketplace/list" method="POST" enctype="multipart/form-data" class="listing-form">
+            <section class="form-section">
+                <h2 class="title"><span class="highlight">Create Listing</span></h2>
+                <div class="form-group">
+                    <label>Category:<span class="required-asterisk">*</span></label>
+                    <select name="category" id="category" required style="font-family: 'Righteous';">
+                        <option value="crops">Crops</option>
+                        <option value="root-vegetables">Root Vegetables</option>
+                        <option value="fruits">Fruits</option>
+                        <option value="spices">Spices</option>
+                        <option value="organic">Organic</option>
+                        <option value="nursery-plants">Nursery & Plants</option>
+                        <option value="dryfruits">Dry Fruits</option>
+                        <option value="animals">Animals</option>
+                        <option value="seeds">Seeds</option>
+                        <option value="dairy">Dairy</option>
+                        <option value="poultry">Poultry</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Commodity Name:<span class="required-asterisk">*</span></label>
+                    <input type="text" name="commodityName" required>
+                </div>
+                <div class="form-group">
+                    <label>Price / <span id="unit"></span><span class="required-asterisk">*</span></label>
+                    <input type="number" name="price" required>
+                </div>
+                <div class="form-group">
+                    <label>Quantity:<span class="required-asterisk">*</span></label>
+                    <input type="number" name="quantity" required>
+                </div>
+                <div class="form-group">
+                    <label>Description:</label>
+                    <textarea name="description" rows="4" maxlength="200"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Upload Image:</label>
+                    <input type="file" name="image" accept="image/*">
+                </div>
+                <button type="submit" class="submit-btn">Create Listing</button>
+            </section>
+        </form>
+    </main>
+    <script>
+        const categoryUnitMap = {
+            "crops": "KG",
+            "root-vegetables": "KG",
+            "fruits": "KG",
+            "spices": "KG",
+            "organic": "KG",
+            "nursery-plants": "Per Dozen",
+            "dryfruits": "KG",
+            "animals": "Per Animal",
+            "seeds": "KG",
+            "dairy": "Ltr",
+            "poultry": "Per Dozen"
+        };
+
+        document.getElementById('category').addEventListener('change', function() {
+            const category = this.value;
+            const unitSpan = document.getElementById('unit');
+            unitSpan.textContent = categoryUnitMap[category] || '';
+        });
+
+        document.getElementById('category').dispatchEvent(new Event('change'));
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if token exists
+            const token = localStorage.getItem('token');
+            console.log('Stored token:', token);
+
+            if (!token) {
+                window.location.href = '/auth/login';
+                return;
+            }
+
+            document.getElementById('listing-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                
+                try {
+                    const listingData = {
+                        name: formData.get('commodityName'),
+                        description: formData.get('description'),
+                        price: parseFloat(formData.get('price')),
+                        quantity: parseInt(formData.get('quantity')),
+                        category: formData.get('category')
+                    };
+
+                    const response = await authFetch('/marketplace/list', {
+                        method: 'POST',
+                        body: listingData
+                    });
+
+                    const result = await response.json();
+                    
+                    document.getElementById('successMessage').textContent = 'Listing created successfully!';
+                    document.getElementById('successPopup').classList.add('open-pop');
+                    document.getElementById('popupOverlay').style.display = 'block';
+                } catch (error) {
+                    console.error('Error creating listing:', error);
+                    document.getElementById('alertMessage').textContent = error.message;
+                    document.getElementById('alertPopup').classList.add('open-pop');
+                    document.getElementById('popupOverlay').style.display = 'block';
+                }
+            });
+        });
+    </script>
+    <div class="popup-overlay" id="popupOverlay"></div>
+    <div class="popup alert-popup" id="alertPopup">
+        <img src="/images/alert.png" alt="Alert">
+        <h2>Session Expired</h2>
+        <p id="alertMessage"></p>
+        <button type="button" onclick="closeAlertPopup()">OK</button>
+    </div>
+    <div class="popup success-popup" id="successPopup">
+        <img src="/images/tick.png" alt="Success">
+        <h2>Success</h2>
+        <p id="successMessage"></p>
+        <button type="button" onclick="closeSuccessPopup()">OK</button>
+    </div>
+    <script>
+        function closeAlertPopup() {
+            document.getElementById('alertPopup').classList.remove('open-pop');
+            document.getElementById('popupOverlay').style.display = 'none';
+            window.location.href = '/auth/login';
+        }
+
+        function closeSuccessPopup() {
+            document.getElementById('successPopup').classList.remove('open-pop');
+            document.getElementById('popupOverlay').style.display = 'none';
+            window.location.href = '/marketplace/list';
+        }
+    </script>
+</body>
+</html>

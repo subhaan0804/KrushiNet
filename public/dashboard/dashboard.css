@@ -1,0 +1,379 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Righteous');
+
+* {
+    font-family: 'Righteous';
+    margin: 0;
+    padding: 0;
+}
+  header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    padding: 15px 30px;
+    gap: 30px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    box-sizing: border-box;
+}
+
+.inhead{
+    width: 90%;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+    transition: all ease-in-out 250ms;
+}
+
+/* ----------------------------------------------------------------------------------------------------------- */
+
+.container {
+	width: 70%;
+	margin: 0 auto;
+}
+
+nav {
+    float: right;
+}
+
+nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+nav li {
+  display: inline-block;
+  margin-left: 70px;
+  padding-top: 5px;
+  position: relative;
+}
+
+nav a {
+  color: #000000;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 18px;
+  transition: all ease-in-out 200ms;
+}
+
+
+nav a::before {
+  content: '';
+  display: block;
+  height: 3px;
+  background-color: var(--primary-color);
+  position: absolute;
+  border-radius: 10px;
+  bottom: 0;
+  width: 0%;
+
+  transition: all ease-in-out 200ms;
+}
+
+nav a:hover::before {
+  width: 100%;
+}
+
+/* ----------------------------------------------------------------------------------------------------------- */
+.logo {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+.logo img {
+    width: 150px;
+}
+
+/* Animated Background */
+.gradient-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1; /* Changed to negative to stay behind everything */
+}
+
+.animated-blob {
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    background: linear-gradient(135deg, rgba(79, 231, 122, 0.8), rgba(163, 163, 1, 0.8)); /* New colors */
+    filter: blur(80px);
+    animation: moveBlob 20s ease-in-out infinite;
+    transform-origin: center;
+    z-index: -1; /* Changed to negative to stay behind everything */
+}
+
+.blob1 {
+    top: -20%;
+    left: -20%;
+}
+
+.blob2 {
+    top: 60%;
+    right: -20%;
+}
+
+.blob3 {
+    bottom: -20%;
+    left: 50%;
+}
+
+@keyframes moveBlob {
+    0% {
+        transform: translate(-30%, -30%) rotate(0deg);
+    }
+    33% {
+        transform: translate(30%, -20%) rotate(120deg);
+    }
+    66% {
+        transform: translate(-20%, 30%) rotate(240deg);
+    }
+    100% {
+        transform: translate(-30%, -30%) rotate(360deg);
+    }
+}
+
+body {
+    margin: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow: hidden;    
+}
+
+
+.custom-font {
+    font-family: 'JetBrains Mono', serif;
+}
+
+/* Loading animation styles remain the same */
+.loading {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading .loader{
+    display: none;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.chart-container {
+    
+    position: relative;
+    height: 400px;
+    width: 800px;
+    margin: 20px auto;
+}
+
+.all-drop-down {
+display: flex;
+justify-content: center;
+}
+
+h1 {
+    font-family: 'righteous';
+    font-weight: bold;
+    text-align: center;
+}
+
+.chart-container {
+    position: relative;
+    height: 400px;
+    width: 800px;
+    margin: 40px auto;
+}
+
+/* Ensure canvases are visible */
+canvas {
+    display: block !important;
+    width: 800px !important;
+    height: 400px !important;
+    max-width: 100%;
+}
+
+.outer-section {
+    display: flex;
+    gap: 20px;
+    height: calc(100vh - 140px);
+    margin-top: 90px;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+    box-sizing: border-box;
+}
+
+.charts-section {
+    width: 70vw;
+    height: calc(100vh - 140px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color:rgb(237, 255, 239);
+    border-radius: 20px;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    transition: all ease-in-out 250ms;
+    border:rgb(0, 120, 0) solid 4px;
+}
+
+.info-card {
+    width: 30vw;
+    height: 85vh;
+    background-color: rgb(237, 255, 239);
+    border-radius: 10px;
+    position: sticky;
+    top: 20px;
+    margin: 10px;
+    padding: 20px;
+    border: rgb(0, 120, 0) solid 4px;
+}
+
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.charts-section::-webkit-scrollbar {
+    width: 8px;
+}
+
+.charts-section::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.charts-section::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.charts-section::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+
+/* Add to dashboard.css */
+.info-card-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+.info-card-skeleton .skeleton {
+    background: linear-gradient(
+        to right,
+        #88f1ce 10%,
+        #3da885 40%,
+        #88f1ce 90%
+    );
+    background-size: 200% 100%;
+    animation: greenShimmer 1.8s infinite linear;
+}
+
+@keyframes greenShimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.info-card-skeleton .text {
+    width: 100%;
+    height: 12px;
+    border-radius: 2px;
+}
+
+/* Remove existing loader styles if unused */
+.info-card .loader {
+    display: none !important;
+}
+
+.status-popup {
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    background: #2196F3;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    /* Add relative positioning for absolute child */
+    /* position: relative; */
+}
+
+.status-popup.visible {
+    top: 20px;
+    opacity: 1;
+    backdrop-filter: blur(1000px);
+    
+}
+
+
+
+.close-btn {
+    position: absolute;
+    top: 12px;  /* Match the popup's padding */
+    right: 12px; /* Match the popup's padding */
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    opacity: 0.8;
+}
+
+.popup-content {
+    padding-right: 30px; /* Space for close button */
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.popup-content p {
+    margin: 0;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        backdrop-filter: blur(1000px);
+        transform: translate(-50%, -20px);
+    }
+}

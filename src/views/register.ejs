@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Page</title>
+    <link rel="stylesheet" href="/css/register.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/popup.css">
+    <link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sessionManager.js" defer></script>
+</head>
+<body>
+    <div class="gradient-container">
+        <div class="animated-blob blob1"></div>
+        <div class="animated-blob blob2"></div>
+        <div class="animated-blob blob3"></div>
+        <div class="animated-blob blob4"></div>
+    </div>
+    <header>
+    <div class="inhead">
+        <span class="logo">
+            <img src="/images/logo.png" alt="logo">
+            <h1>Krushi<span class="highlight">Net</span></h1>
+        </span>
+            <div class="container">
+                <nav>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="/marketplace/listings/view">Market</a></li>
+                        <li><a href="#">Market Analysis</a></li>
+                        <%- include('partials/authNav') %>
+                    </ul>
+                </nav>
+                </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <main>
+        <form id="registration-form" action="/auth/register" method="POST" enctype="multipart/form-data" class="registration-form">
+            <section class="form-section">
+                <h2 class="title"><span class="highlight">SignUp Now</span></h2>
+                <!-- Page 1 -->
+                <div id="page1" class="form-page">
+                    <div class="form-group1">
+                        <label>First Name:<span class="required-asterisk">*</span></label>
+                        <input type="text" name="firstName" required>
+                        <label>Last Name:<span class="required-asterisk">*</span></label>
+                        <input type="text" name="lastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Gender:<span class="required-asterisk">*</span></label>
+                        <select name="gender" required style="font-family: 'Righteous';">
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Date of Birth:<span class="required-asterisk">*</span></label>
+                        <input type="date" name="dateOfBirth" required style="font-family: 'Righteous';">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone No:<span class="required-asterisk">*</span></label>
+                        <input type="tel" name="phoneNo" required>
+                    </div>
+                    <button type="button" class="submit-btn" onclick="nextPage()">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+
+                <!-- Page 2 -->
+                <div id="page2" class="form-page" style="display: none;">
+                    <div class="form-group">
+                        <label>Email:<span class="required-asterisk">*</span></label>
+                        <input type="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password:<span class="required-asterisk">*</span></label>
+                        <div class="password-wrapper">
+                            <input type="password" name="password" id="password" required>
+                            <i class="fas fa-eye toggle-password" id="toggle-password"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>State:<span class="required-asterisk">*</span></label>
+                        <select name="state" id="state" required style="font-family: 'Righteous';">
+                            <option value="">Select State</option>
+                            <option value="Andhra Pradesh">Andhra Pradesh</option>
+                            <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                            <option value="Assam">Assam</option>
+                            <option value="Bihar">Bihar</option>
+                            <option value="Chhattisgarh">Chhattisgarh</option>
+                            <option value="Goa">Goa</option>
+                            <option value="Gujarat">Gujarat</option>
+                            <option value="Haryana">Haryana</option>
+                            <option value="Himachal Pradesh">Himachal Pradesh</option>
+                            <option value="Jharkhand">Jharkhand</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Kerala">Kerala</option>
+                            <option value="Madhya Pradesh">Madhya Pradesh</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Manipur">Manipur</option>
+                            <option value="Meghalaya">Meghalaya</option>
+                            <option value="Mizoram">Mizoram</option>
+                            <option value="Nagaland">Nagaland</option>
+                            <option value="Odisha">Odisha</option>
+                            <option value="Punjab">Punjab</option>
+                            <option value="Rajasthan">Rajasthan</option>
+                            <option value="Sikkim">Sikkim</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                            <option value="Telangana">Telangana</option>
+                            <option value="Tripura">Tripura</option>
+                            <option value="Uttar Pradesh">Uttar Pradesh</option>
+                            <option value="Uttarakhand">Uttarakhand</option>
+                            <option value="West Bengal">West Bengal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>City:<span class="required-asterisk">*</span></label>
+                        <input type="text" name="city" id="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label>UpiId:</label>
+                        <input type="text" name="upiId">
+                    </div>
+                    <div class="form-group">
+                        <label>Aadhaar No:<span class="required-asterisk">*</span></label>
+                        <input type="text" name="aadhaarNo" required>
+                    </div>
+                    <div class="button-group">
+                        <button type="button" class="submit-btn" onclick="prevPage()"><i class="fas fa-arrow-left"></i> Back</button>
+                        <button type="submit" class="submit-btn">Sign Up <i class="fas fa-check"></i></button>
+                    </div>
+                </div>
+                <p class="already-account">Already have an account? <a href="/auth/login"><span>Login</span></a></p>
+            </section>
+            
+        </form>
+    </main>
+    <script>
+        const stateCityMap = {
+            Maharashtra: ["Mumbai", "Pune", "Nagpur"],
+            Gujarat: ["Ahmedabad", "Surat", "Vadodara"],
+            Karnataka: ["Bangalore", "Mysore", "Mangalore"]
+        };
+
+        const citySelect = document.getElementById('city');
+
+        document.getElementById('state').addEventListener('change', function() {
+            const state = this.value;
+            const citySelect = document.getElementById('city');
+            citySelect.innerHTML = '<option>Select City</option>'; // Reset city options
+
+            if (stateCityMap[state]) {
+                stateCityMap[state].forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    citySelect.appendChild(option);
+                });
+            }
+        });
+
+        // Dropdown functionality
+        document.querySelectorAll('nav ul li').forEach(li => {
+            const link = li.querySelector('a');
+            const dropdown = li.querySelector('.dropdown');
+            
+            if (dropdown) {
+                // Add dropdown arrow
+                link.innerHTML += ' <i class="fas fa-chevron-down"></i>';
+                
+                // Click handler
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // Close all other dropdowns
+                    document.querySelectorAll('.dropdown').forEach(d => {
+                        if (d !== dropdown) d.style.display = 'none';
+                    });
+                    // Toggle current dropdown
+                    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                    // Match dropdown width to parent
+                    dropdown.style.width = `${li.offsetWidth}px`;
+                });
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('nav ul li')) {
+                document.querySelectorAll('.dropdown').forEach(d => {
+                    d.style.display = 'none';
+                });
+            }
+        });
+
+        // Form submission handler
+        document.getElementById('registration-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            try {
+                const state = formData.get('state');
+                const city = formData.get('city');
+                
+                const geoResponse = await fetch(`/auth/geocode?city=${city}&state=${state}`);
+                const geoData = await geoResponse.json();
+        
+                if (!geoData || geoData.length === 0) {
+                    throw new Error('Could not find coordinates for your location');
+                }
+        
+                const data = {
+                    firstName: formData.get('firstName'),
+                    lastName: formData.get('lastName'),
+                    email: formData.get('email').toLowerCase(),
+                    password: formData.get('password'),
+                    gender: formData.get('gender'),
+                    dateOfBirth: formData.get('dateOfBirth'),
+                    phoneNo: formData.get('phoneNo'),
+                    state: formData.get('state'),
+                    city: formData.get('city'),
+                    upiId: formData.get('upiId'),
+                    aadhaarNo: formData.get('aadhaarNo'),
+                    location: {
+                        type: 'Point',
+                        coordinates: [geoData[0].lon, geoData[0].lat],
+                        address: `${city}, ${state}`
+                    }
+                };
+        
+                const response = await fetch('/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+        
+                const result = await response.json();
+        
+                if (response.ok) {
+                    document.getElementById('successMessage').textContent = 'Registration successful! Click OK to proceed to login.';
+                    document.getElementById('successPopup').classList.add('open-pop');
+                    document.getElementById('popupOverlay').style.display = 'block';
+                } else {
+                    throw new Error(result.message || 'Registration failed');
+                }
+            } catch (error) {
+                document.getElementById('alertMessage').textContent = error.message;
+                document.getElementById('alertPopup').classList.add('open-pop');
+                document.getElementById('popupOverlay').style.display = 'block';
+            }
+        });        
+        
+        // Popup close functions
+        function closeSuccessPopup() {
+            document.getElementById('successPopup').classList.remove('open-pop');
+            document.getElementById('popupOverlay').style.display = 'none';
+            window.location.href = '/auth/login'; // Redirect only after clicking OK
+        }
+        
+        function closeAlertPopup() {
+            document.getElementById('alertPopup').classList.remove('open-pop');
+            document.getElementById('popupOverlay').style.display = 'none';
+        }
+        // Toggle password visibility
+        document.getElementById('toggle-password').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        // Pagination functions
+        function nextPage() {
+            // Validate first page
+            const page1Inputs = document.querySelectorAll('#page1 input, #page1 select');
+            let isValid = true;
+            page1Inputs.forEach(input => {
+                if (!input.value) {
+                    isValid = false;
+                    input.style.borderColor = 'red';
+                } else {
+                    input.style.borderColor = '#ccc';
+                }
+            });
+
+            if (!isValid) {
+                document.getElementById('alertMessage').textContent = 'Please fill all required fields';
+                document.getElementById('alertPopup').classList.add('open-pop');
+                document.getElementById('popupOverlay').style.display = 'block';
+                return;
+            }
+
+            // Switch to page 2
+            document.getElementById('page1').style.display = 'none';
+            document.getElementById('page2').style.display = 'block';
+            document.getElementById('page2').classList.add('slide-in');
+        }
+
+        function prevPage() {
+            // Switch back to page 1
+            document.getElementById('page2').style.display = 'none';
+            document.getElementById('page1').style.display = 'block';
+            document.getElementById('page1').classList.add('slide-in');
+        }
+    </script>
+
+    <!-- These are the popups -->
+    <div class="popup-overlay" id="popupOverlay"></div>
+    <div class="popup success-popup" id="successPopup">
+        <img src="/images/tick.png" alt="Success">
+        <h2>Success!</h2>
+        <p id="successMessage"></p>
+        <button type="button" onclick="closeSuccessPopup()">OK</button>
+    </div>
+    
+    <div class="popup alert-popup" id="alertPopup">
+        <img src="/images/alert.png" alt="Alert">
+        <h2>Alert!</h2>
+        <p id="alertMessage"></p>
+        <button type="button" onclick="closeAlertPopup()">OK</button>
+    </div>
+    
+</body>
+</html>

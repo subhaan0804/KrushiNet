@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Assistant - AI Chatbot</title>
+    <!-- <link rel="stylesheet" href="/css/main.css"> -->
+    <link rel="stylesheet" href="/css/chatbot.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="blob-container">
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
+    <div class="gradient"></div>
+
+
+   
+
+        <!-- Main Chat Area -->
+        <main class="chat-main">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="header-left">
+                    <button id="back-btn" title="Exit Chatbot">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2>Farmer Assistant - Krushi Mitra</h2>
+                </div>
+                <div class="chat-actions">
+                    <button id="clear-chat" title="Clear Chat History">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Messages Container -->
+            <div class="messages-container" id="messages-container">
+                <!-- Welcome Message -->
+                <div class="message bot-message welcome-message">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <h3>Farmer Assistant</h3>
+                        <div class="message-text">
+                            <p>👋 Hello! I'm your farming assistant powered by AI. I can help with:</p>
+                            <ul>
+                                <li>Crop selection and rotation</li>
+                                <li>Pest and disease identification</li>
+                                <li>Weather-based planning</li>
+                                <li>Irrigation and soil management</li>
+                                <li>Sustainable farming practices</li>
+                            </ul>
+                            <p>How can I assist you today?</p>
+                        </div>
+                        <div class="message-time">
+                            <span id="current-time"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Messages will be added here dynamically -->
+            </div>
+
+            <!-- Suggested Questions -->
+            <div class="suggested-questions" id="suggested-questions">
+                <button class="suggestion-btn">What crops grow well in sandy soil?</button>
+                <button class="suggestion-btn">How to identify tomato blight?</button>
+                <button class="suggestion-btn">Best organic fertilizers for vegetables?</button>
+                <button class="suggestion-btn">Water conservation techniques for farming</button>
+            </div>
+
+            <!-- Message Input Area -->
+            <div class="message-input-container">
+                <form id="message-form">
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="message-input" 
+                            placeholder="Ask me about farming..." 
+                            rows="1" 
+                            required
+                        ></textarea>
+                        <!-- <button type="button" id="attachment-btn" title="Upload image">
+                            <i class="fas fa-paperclip"></i>
+                        </button> -->
+                    </div>
+                    <button type="submit" id="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+                <div class="input-info">
+                    <p>Powered by Gemini AI. For farming advice only, not medical advice. Developed by CodeSmiths SDKR</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+    <!-- Scripts -->
+    <script>
+        // Initialize user ID from localStorage or create a new one
+        // let userId = localStorage.getItem('userId') || 'user-' + Date.now();
+        // localStorage.setItem('userId', userId);
+        
+        const userId = "test-user-123";
+
+        // Set current time in welcome message
+        document.getElementById('current-time').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        // Elements
+        const messagesContainer = document.getElementById('messages-container');
+        const messageForm = document.getElementById('message-form');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-btn');
+        const clearChatButton = document.getElementById('clear-chat');
+        const suggestionButtons = document.querySelectorAll('.suggestion-btn');
+        
+        // Auto-resize textarea with debounce for performance
+        let resizeTimeout = null;
+        messageInput.addEventListener('input', function() {
+            if (this.value === '') {
+                // Reset immediately if empty
+                this.style.height = '';
+                return;
+            }
+            
+            // Clear previous timeout
+            if (resizeTimeout) clearTimeout(resizeTimeout);
+            
+            // Set timeout for resize (16ms is roughly one frame at 60fps)
+            resizeTimeout = setTimeout(() => {
+                this.style.height = 'auto';
+                const newHeight = Math.min(this.scrollHeight, 150);
+                this.style.height = newHeight + 'px';
+            }, 16);
+        });
+
+        // Ensure pasting works in the textarea
+        // messageInput.addEventListener('paste', (e) => {
+        //     e.stopPropagation();  // Prevent interference
+        //     e.preventDefault();
+            
+        //     const text = (e.clipboardData || window.clipboardData).getData('text');
+        //     messageInput.value += text;  // Append pasted text
+        // });
+
+        // Function to resize the textarea dynamically
+        function resizeTextarea() {
+            messageInput.style.height = 'auto';
+            const newHeight = Math.min(messageInput.scrollHeight + 10, 200); // Expands but limited to 200px
+            messageInput.style.height = `${newHeight}px`;
+        }
+
+        // Auto-resize on input
+        messageInput.addEventListener('input', resizeTextarea);
+
+        // Auto-resize on paste
+        messageInput.addEventListener('paste', function (e) {
+            setTimeout(() => {
+                resizeTextarea(); // Delay to ensure pasted text is inserted before resizing
+            }, 10);
+        });
+
+
+        
+        // Handle message submission
+        messageForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            // // Disable input while processing
+            // messageInput.disabled = true;
+            // sendButton.disabled = true;
+
+            // Ensure input remains enabled
+            messageInput.removeAttribute('disabled');
+            sendButton.removeAttribute('disabled');
+                        
+            // Add user message to UI
+            addMessageToUI('user', message);
+            
+            // Clear input
+            messageInput.value = '';
+            messageInput.style.height = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            try {
+                // Send message to backend
+                const response = await sendMessageToBackend(message);
+                
+                // Remove typing indicator
+                removeTypingIndicator();
+                
+                // Add bot response to UI
+                addMessageToUI('bot', response);
+            } catch (error) {
+                console.error('Error:', error);
+                removeTypingIndicator();
+                addMessageToUI('bot', 'Sorry, I encountered an error. Please try again.');
+            } finally {
+                // Re-enable input
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                messageInput.focus();
+            }
+        });
+
+
+
+        
+        // Send message to backend
+        async function sendMessageToBackend(message) {
+            const response = await fetch('http://localhost:3000/chatbot/message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    message: `${message}, (max output tokens 400)`
+                })
+            });
+            console.log("backend endpoint hitted...")
+            
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to get response');
+            }
+            
+            const data = await response.json();
+            console.log(data);
+            return data.data.response;
+        }
+        
+        // Clear chat history
+        clearChatButton.addEventListener('click', async function() {
+            if (confirm('Are you sure you want to clear chat history?')) {
+                try {
+                    const response = await fetch(`http://localhost:3000/chatbot/history/${userId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        // Keep only welcome message
+                        const welcomeMessage = messagesContainer.querySelector('.welcome-message');
+                        messagesContainer.innerHTML = '';
+                        messagesContainer.appendChild(welcomeMessage);
+                    } else {
+                        console.error('Failed to clear history');
+                    }
+                } catch (error) {
+                    console.error('Error clearing history:', error);
+                }
+            }
+        });
+        
+        // Handle suggestion buttons
+        suggestionButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                messageInput.value = this.textContent;
+                messageInput.dispatchEvent(new Event('input'));
+                messageInput.focus();
+            });
+        });
+        
+        // Add message to UI
+        function addMessageToUI(type, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type === 'user' ? 'user-message' : 'bot-message'}`;
+            
+            // Current time
+            const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            if (type === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                        <div class="message-text">
+                            <p>${escapeHTML(text)}</p>
+                        </div>
+                        <div class="message-time">${currentTime}</div>
+                    </div>
+                `;
+            } else {
+                // Convert newlines to <br> for bot messages and handle lists
+                let formattedText = formatBotMessage(text);
+                
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <h3>Farmer Assistant</h3>
+                        <div class="message-text">
+                            ${formattedText}
+                        </div>
+                        <div class="message-time">${currentTime}</div>
+                    </div>
+                `;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            smoothScrollToBottom(150);
+        }
+        
+        // Simple smooth scroll to bottom (for user messages and typing indicator)
+        function smoothScrollToBottom(duration = 300) {
+            const targetPosition = messagesContainer.scrollHeight - messagesContainer.clientHeight;
+            const startPosition = messagesContainer.scrollTop;
+            const distance = targetPosition - startPosition;
+            let startTime = null;
+            
+            function animation(currentTime) {
+                if (startTime === null) startTime = currentTime;
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing function for smooth deceleration
+                const easeOutCubic = progress => 1 - Math.pow(1 - progress, 3);
+                
+                messagesContainer.scrollTop = startPosition + distance * easeOutCubic(progress);
+                
+                if (elapsed < duration) {
+                    window.requestAnimationFrame(animation);
+                }
+            }
+            
+            window.requestAnimationFrame(animation);
+        }        
+        
+
+
+
+        // Format bot messages
+        function formatBotMessage(text) {
+            // First, let's handle bullet points that start with "* " at the beginning of lines
+            text = text.replace(/^[\s]*\* ([^*].+?)$/gm, '• $1');
+            
+            // Then handle markdown-style formatting
+            // Bold (handle ** for bold text)
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Italic (handle * for italic text, but not at beginning of lines where we already converted to bullets)
+            text = text.replace(/(?<!\n|^)\*(.*?)\*/g, '<em>$1</em>');
+            
+            // Handle line breaks
+            let formatted = text.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+            
+            // Wrap in paragraph if not already
+            if (!formatted.startsWith('<p>')) {
+                formatted = `<p>${formatted}</p>`;
+            }
+            
+            // Handle lists (simple implementation)
+            formatted = formatted.replace(/• (.*?)(?=<br>|<\/p>|$)/g, '<li>$1</li>');
+            formatted = formatted.replace(/\d+\. (.*?)(?=<br>|<\/p>|$)/g, '<li>$1</li>');
+            
+            // Fix the list structure for proper spacing
+            formatted = formatted.replace(/<\/li><br><li>/g, '</li><li>');
+            formatted = formatted.replace(/<p>(<li>.*?<\/li>)<\/p>/g, '<ul>$1</ul>');
+            formatted = formatted.replace(/(<li>.*?<\/li>)/g, function(match) {
+                if (!match.includes('<ul>')) {
+                    return '<ul>' + match + '</ul>';
+                }
+                return match;
+            });
+            
+            // Remove any empty paragraphs
+            formatted = formatted.replace(/<p>\s*<\/p>/g, '');
+            
+            // Fix nested lists if any
+            formatted = formatted.replace(/<\/ul><br><ul>/g, '</ul><ul>');
+            
+            return formatted;
+        }
+        
+        // Show typing indicator
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot-message typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            `;
+            typingDiv.id = 'typing-indicator';
+            messagesContainer.appendChild(typingDiv);
+            smoothScrollToBottom(200); // slightly faster scroll for typing indicator
+        }
+        
+        // Remove typing indicator
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+        
+        // Escape HTML to prevent XSS
+        function escapeHTML(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Back button functionality
+        document.getElementById('back-btn').addEventListener('click', function() {
+            if (confirm('Are you sure you want to exit the chatbot?')) {
+                window.history.back(); // Goes back to previous page
+            }
+        });
+        
+        // Auto-focus input on page load
+        window.addEventListener('load', function() {
+            messageInput.focus();
+        });
+    </script>
+</body>
+</html>

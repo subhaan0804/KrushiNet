@@ -1,0 +1,350 @@
+@import url('https://fonts.googleapis.com/css?family=Righteous');
+
+:root {
+  --primary-color: rgb(255, 255, 255);
+  --secondary-color: #4CAF50;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Righteous', 'aerial';
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(45deg, rgba(238, 174, 202, 0.4), rgba(148, 187, 233, 0.4));
+}
+
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  padding: 15px 30px;
+  gap: 30px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  box-sizing: border-box;
+}
+
+.inhead {
+  width: 90%;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+  transition: all ease-in-out 250ms;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
+.logo img {
+  width: 150px;
+}
+
+nav {
+  float: right;
+}
+
+nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+nav li {
+  display: inline-block;
+  margin-left: 70px;
+  padding-top: 5px;
+  position: relative;
+}
+
+nav a {
+  color: #000000;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 18px;
+  transition: all ease-in-out 200ms;
+}
+
+nav a::before {
+  content: '';
+  display: block;
+  height: 3px;
+  background-color: var(--primary-color);
+  position: absolute;
+  border-radius: 10px;
+  bottom: 0;
+  width: 0%;
+  transition: all ease-in-out 200ms;
+}
+
+.container {
+  display: flex;
+  background-color: transparent;
+  max-width: 1400px;
+  width: 90%;
+  margin: 40px auto;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50%;
+  margin: 20px auto;
+  padding: var(--form-padding);
+  border-radius: var(--form-border-radius);
+  position: relative;
+  z-index: 1;
+}
+
+/* Animated Background */
+.gradient-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.animated-blob {
+  position: absolute;
+  width: 800px;
+  height: 800px;
+  background: linear-gradient(135deg, rgba(79, 231, 122, 0.8), rgba(163, 163, 1, 0.8));
+  filter: blur(80px);
+  animation: moveBlob 20s ease-in-out infinite;
+  transform-origin: center;
+  z-index: -1;
+}
+
+.blob1 {
+  top: -20%;
+  left: -20%;
+}
+
+.blob2 {
+  top: 60%;
+  right: -20%;
+}
+
+.blob3 {
+  bottom: -20%;
+  left: 50%;
+}
+
+@keyframes moveBlob {
+  0% {
+    transform: translate(-30%, -30%) rotate(0deg);
+  }
+  33% {
+    transform: translate(30%, -20%) rotate(120deg);
+  }
+  66% {
+    transform: translate(-20%, 30%) rotate(240deg);
+  }
+  100% {
+    transform: translate(-30%, -30%) rotate(360deg);
+  }
+}
+
+.profile-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.profile-photo .placeholder {
+  width: 70%;
+  height: 70%;
+  background-color: #bdbdbd;
+  border-radius: 50%;
+  position: relative;
+}
+
+.profile-photo .placeholder::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: 15%;
+  width: 70%;
+  height: 70%;
+  background-color: #bdbdbd;
+  border-radius: 50% 50% 0 0;
+}
+
+.main-personal-info-card {
+  flex: 0 0 450px;
+  height: 650px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-top: 110px;
+}
+
+.user-info-card-upper-part {
+  text-align: center;
+  margin-bottom: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.profile-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 0 auto;
+  border: 4px solid var(--secondary-color);
+}
+
+.user-info-text {
+  text-align: center;
+  width: 100%;
+}
+
+.user-info-text h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.user-info-card-lower-part {
+  text-align: left;
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 12px;
+  padding: 25px;
+  margin: 15px 0;
+  margin-bottom: 0;
+  position: relative;
+}
+
+.user-info-card-lower-part span {
+  margin-bottom: 20px;
+  display: block;
+}
+
+.user-info-card-lower-part span:last-child {
+  margin-bottom: 0;
+}
+
+.user-info-card-lower-part p {
+  margin: 12px 0;
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.6;
+}
+
+.edit-icon {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  color: var(--secondary-color);
+  font-size: 1.1rem;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.2s ease-in-out;
+}
+
+.edit-icon:hover {
+  background-color: rgba(76, 175, 80, 0.1);
+  transform: rotate(15deg);
+}
+
+.secondary-cards-container {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 20px;
+  height: 650px;
+  margin-top: 110px;
+}
+
+.Box1, .Box2, .Box3, .Box4 {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 25px;
+  color: #333;
+  transition: transform 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.Box1:hover, .Box2:hover, .Box3:hover, .Box4:hover {
+  transform: translateY(-5px);
+}
+
+.box-heading {
+  font-size: 1.3rem;
+  color: var(--secondary-color);
+  margin-bottom: 20px;
+  border-bottom: 2px solid rgba(76, 175, 80, 0.2);
+  padding-bottom: 10px;
+}
+
+.left {
+  text-align: left;
+  color: #000000;
+}
+
+/* Add this for better responsiveness */
+@media (max-width: 1200px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .main-personal-info-card,
+  .secondary-cards-container {
+    height: auto;
+    min-height: unset;
+  }
+
+  .Box1, .Box2, .Box3, .Box4 {
+    min-height: 250px;
+  }
+
+  .main-personal-info-card {
+    margin-bottom: 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .secondary-cards-container {
+    grid-template-columns: 1fr;
+  }
+}

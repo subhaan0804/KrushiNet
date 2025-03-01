@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Dynamic Chart Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- <script src="script.js"></script> -->
+</head>
+
+<body>
+
+  <div class="gradient-container">
+    <div class="animated-blob blob1"></div>
+    <div class="animated-blob blob2"></div>
+    <div class="animated-blob blob3"></div>
+    <div class="animated-blob blob4"></div>
+  </div>
+  <header>
+    <div class="inhead">
+      <span class="logo">
+        <img src="/logo.png" alt="logo">
+        <h1>Krushi<span class="highlight">Net</span></h1>
+      </span>
+      <div class="container">
+        <nav>
+          <ul>
+
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Market</a></li>
+            <li><a href="#">Market Analysis</a></li>
+            <li><a href="#">User Profile</a></li>
+            <li><a href="#">Login/SignUp</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <div class="outer-section">
+    <div class="charts-section">
+      <div class="charts-heading">
+        <h1>Commodity Prices</h1>
+      </div>
+      <div class="all-drop-down">
+        <div class="filters">
+          <select id="category" style="font-family: 'JetBrains Mono'; font-weight: bold">
+            <option value="">Select Category</option>
+            <option value="fruits">Fruits</option>
+            <option value="vegetables">Vegetables</option>
+            <option value="grains">Grains</option>
+          </select>
+
+          <select id="commodity" style="font-family: 'JetBrains Mono'; font-weight: bold">
+            <option value="">Select Commodity</option>
+          </select>
+
+          <select id="location" style="font-family: 'JetBrains Mono'; font-weight: bold">
+            <option value="">Select Location</option>
+            <option value="MH">Maharashtra</option>
+            <option value="GJ">Gujarat</option>
+            <option value="KL">Kerala</option>
+            <option value="OD">Oddisha</option>
+          </select>
+
+          <select id="limit" style="font-family: 'JetBrains Mono'; font-weight: bold">
+            <option value="10">10 Days</option>
+            <option value="20">20 Days</option>
+            <option value="30">30 Days</option>
+            <option value="45">45 Days</option>
+            <option value="60">60 Days</option>
+            <option value="90">90 Days</option>
+            <option value="120">120 Days</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <div class="loading">
+          <div class="loading-spinner"></div>
+        </div>
+        <canvas id="myChart"></canvas>
+      </div>
+
+      <div class="charts-heading">
+        <h1>Price Volatility Trend</h1>
+    </div>
+    <div class="chart-container">
+        <div class="loading">
+            <div class="loading-spinner"></div>
+        </div>
+        <canvas id="volatilityChart"></canvas>
+    </div>
+
+      <div class="charts-heading">
+        <h1>Commodity Prices</h1>
+      </div>
+      <div class="chart-container">
+        <div class="loading">
+          <div class="loading-spinner"></div>
+        </div>
+        <canvas id="priceTrendChart"></canvas>
+      </div>
+
+      <div class="charts-heading">
+        <h1>Commodity Prices</h1>
+      </div>
+      <div class="chart-container">
+        <canvas id="anomalyDetectionChart"></canvas>
+      </div>
+
+      <div class="charts-heading">
+        <h1>Price Prediction(for next day)</h1>
+      </div>
+      <div class="chart-container">
+        <canvas id="pricePredictionChart"></canvas>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <!-- Skeleton Loading -->
+      <div class="info-card-skeleton">
+        <div class="skeleton text" style="width: 60%"></div>
+        <div class="skeleton text"></div>
+        <div class="skeleton text"></div>
+        <div class="skeleton text" style="width: 80%"></div>
+        <div class="skeleton text" style="width: 40%"></div>
+        <div class="skeleton text"></div>
+        <div class="skeleton text"></div>
+        <div class="skeleton text" style="width: 70%"></div>
+      </div>
+
+      <!-- Original Content (Hidden by default) -->
+      <div class="loaded-content" style="display: none">
+        <p>info card</p>
+      </div>
+    </div>
+
+    <!-- Error notification (choose all the drop down)-->
+    <div class="status-popup" id="statusPopup">
+      <button class="close-btn" onclick="hidePopup()">×</button>
+      <div class="popup-content poppins-medium">
+        <p>Please select all the options</p>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <script>
+
+    // MACD Calculation Utilities
+    const calculateEMA = (data, period) => {
+      const k = 2 / (period + 1);
+      const ema = [data[0]];
+      for (let i = 1; i < data.length; i++) {
+        ema.push(data[i] * k + ema[i - 1] * (1 - k));
+      }
+      return ema;
+    };
+
+    const calculateMACD = (prices) => {
+      const ema12 = calculateEMA(prices, 12);
+      const ema26 = calculateEMA(prices, 26);
+      const macdLine = ema12.map((v, i) => v - ema26[i]);
+      const signalLine = calculateEMA(macdLine, 9);
+      const histogram = macdLine.map((v, i) => v - signalLine[i]);
+      return { macdLine, signalLine, histogram };
+    };
+    let charts = {
+      myChart: null,
+      priceTrendChart: null,
+      anomalyDetectionChart: null,
+      pricePredictionChart: null,
+    };
+
+    // Hardcoded commodity data
+    const commodityData = {
+      fruits: ["apples", "Banana", "Orange", "Grapes", "Mango"],
+      vegetables: ["Carrot", "Potato", "Tomato", "Onion", "Spinach"],
+      grains: ["Wheat", "Rice", "Oats", "Corn", "Barley"],
+    };
+
+    // Initialize event listeners
+    document.addEventListener("DOMContentLoaded", function () {
+      document
+        .getElementById("category")
+        .addEventListener("change", updateCommodities);
+      document
+        .getElementById("commodity")
+        .addEventListener("change", fetchData);
+      document
+        .getElementById("location")
+        .addEventListener("change", fetchData);
+      document.getElementById("limit").addEventListener("change", fetchData);
+
+      // Initial commodities update
+      updateCommodities();
+    });
+
+    function updateCommodities() {
+      const category = document.getElementById("category").value;
+      const commoditySelect = document.getElementById("commodity");
+
+      // Clear existing options
+      commoditySelect.innerHTML =
+        '<option value="">Select Commodity</option>';
+
+      if (category && commodityData[category]) {
+        // Add new options from hardcoded data
+        commodityData[category].forEach((commodity) => {
+          const option = document.createElement("option");
+          option.value = commodity.toLowerCase();
+          option.textContent = commodity;
+          commoditySelect.appendChild(option);
+        });
+      }
+
+      fetchData(); // Update chart when commodities change
+    }
+
+    // Enhanced Demo Data Generator
+    const generateDemoData = (limit) => {
+      const basePrices = Array.from(
+        { length: limit },
+        (_, i) => Math.sin(i * 0.2) * 50 + 100 + Math.random() * 10
+      );
+
+      // MACD Data
+      const { macdLine, signalLine, histogram } = calculateMACD(basePrices);
+
+      // Control Chart Data
+      const movingAverage = [];
+      const ucl = [];
+      const lcl = [];
+      const anomalies = basePrices.map((price, idx) => {
+        const window = basePrices.slice(Math.max(0, idx - 20), idx + 1);
+        const avg = window.reduce((a, b) => a + b, 0) / window.length;
+        const std = Math.sqrt(
+          window.reduce((a, b) => a + (b - avg) ** 2, 0) / window.length
+        );
+
+        movingAverage.push(avg);
+        ucl.push(avg + 3 * std);
+        lcl.push(avg - 3 * std);
+
+        return price > avg + 3 * std || price < avg - 3 * std ? price : null;
+      });
+
+      // Prediction Data
+      const predictions = basePrices.map((v, i) =>
+        i > limit * 0.8 ? v * (1 + (Math.random() - 0.5) * 0.1) : null
+      );
+      const upperBound = predictions.map((v) => (v ? v * 1.1 : null));
+      const lowerBound = predictions.map((v) => (v ? v * 0.9 : null));
+
+      return {
+        prices: {
+          labels: Array.from({ length: limit }, (_, i) => `Day ${i + 1}`),
+          values: basePrices,
+        },
+        trendAnalysis: {
+          labels: Array.from({ length: limit }, (_, i) => `Day ${i + 1}`),
+          macdLine,
+          signalLine,
+          histogram,
+        },
+        anomalies: {
+          labels: Array.from({ length: limit }, (_, i) => `Day ${i + 1}`),
+          values: basePrices,
+          movingAverage,
+          ucl,
+          lcl,
+          anomalies,
+        },
+        predictions: {
+          labels: Array.from({ length: limit }, (_, i) => `Day ${i + 1}`),
+          actual: basePrices,
+          predicted: predictions,
+          upperBound,
+          lowerBound,
+        },
+        marketHealth: {
+          labels: ["Trend", "Volatility", "Volume"],
+          datasets: [
+            {
+              trend: 45,
+              volatility: 70,
+              volume: 30,
+              status: "Critical",
+            },
+          ],
+        },
+      };
+    };
+
+    function convertAPIDataToPriceTrend(apiResponse) {
+      console.log("trend: ", apiResponse);
+      const trendData = apiResponse.data?.trend || {};
+      return {
+        labels: [
+          "Overall Trend",
+          "Volatility (%)",
+          "Average Price",
+          "Min Price",
+          "Max Price",
+        ],
+        values: [
+          apiResponse.data.trend.overallTrend,
+          (apiResponse.data.trend.volatility * 100).toFixed(2), // Convert to percentage & fix decimal places
+          apiResponse.data.trend.averagePrice.toFixed(2),
+          apiResponse.data.trend.minPrice.toFixed(2),
+          apiResponse.data.trend.maxPrice.toFixed(2),
+        ],
+      };
+    }
+
+    function formatPricePredictionData(apiResponse) {
+      if (!apiResponse.success || !apiResponse.data) {
+        console.error("Invalid API response");
+        return { currentPrice: 0, predictedPrice: 0 };
+      }
+
+      const rawData = apiResponse.data;
+
+      // Extracting currentPrice, predictedPrice, and optionally other values if required
+      const currentPrice = rawData.currentPrice || 0;
+      const predictedPrice = rawData.predictedPrice || 0;
+
+      return { currentPrice, predictedPrice };
+    }
+
+    function convertAPIDataToAnamolyData(apiResponse) {
+      if (!apiResponse.success || !apiResponse.data) {
+        console.error("Invalid API response");
+        return { labels: [], values: [], anomalies: [] };
+      }
+
+      const rawData = apiResponse.data;
+
+      // Extracting dates as labels and prices as values
+      const labels = rawData.anomalies.map((a) =>
+        new Date(a.date).toLocaleDateString()
+      );
+      const values = rawData.anomalies.map((a) => a.price);
+
+      // Extracting anomalies (same as values but keeping only actual anomalies)
+      const anomalies = rawData.anomalies.map((a) => a.deviation);
+
+      return { labels, values, anomalies };
+    }
+
+    function convertAPIDataToVolatility(apiResponse) {
+        const trendData = apiResponse.data?.trend || {};
+        return {
+            labels: trendData.dates.map(date => new Date(date).toLocaleDateString()),
+            values: [
+                trendData.averagePrice,
+                trendData.minPrice,
+                trendData.maxPrice
+            ],
+            volatilityData: {
+                labels: trendData.dates.map(date => new Date(date).toLocaleDateString()),
+                values: trendData.volatility // Now an array of daily volatilities
+            }
+        };
+    }
+
+    // Add this function to process the analysis data and prepare it for the chatbot
+    async function getMarketAnalysisSummary(analysisData) {
+      try {
+        const response = await fetch('http://localhost:3000/chatbot/message', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: `Summarize this market analysis data for ${analysisData.data.commodity} in ${analysisData.data.location}:
+              Overall Trend: ${analysisData.data.analysis.trends.trend.overallTrend}%
+              Volatility: ${(analysisData.data.analysis.trends.trend.volatility * 100).toFixed(2)}%
+              Average Price: ₹${analysisData.data.analysis.trends.trend.averagePrice}
+              Price Range: ₹${analysisData.data.analysis.trends.trend.minPrice} - ₹${analysisData.data.analysis.trends.trend.maxPrice}
+              Prediction: ${analysisData.data.analysis.prediction.trend}
+              Market Health: ${analysisData.data.analysis.health.status}
+              Number of Anomalies: ${analysisData.data.analysis.anomalies.anomalies.length}
+              Please provide a concise market summary.`
+          })
+        });
+
+        const chatbotResponse = await response.json();
+        return chatbotResponse.data.response;
+      } catch (error) {
+        console.error('Error getting market analysis summary:', error);
+        return 'Unable to generate market summary at this time.';
+      }
+    }
+
+    // Add this function to update the info card content
+    function updateInfoCard(summary) {
+      const loadedContent = document.querySelector('.loaded-content');
+      loadedContent.innerHTML = `
+        <div class="market-summary" style="font-family: 'Poppins', sans-serif;">
+          <h2 style="color: #2c5282; margin-bottom: 1rem;">Market Analysis Summary</h2>
+          <div style="line-height: 1.6; color: #2d3748;">
+            ${summary}
+          </div>
+        </div>
+      `;
+      loadedContent.style.display = 'block';
+    }
+
+    async function fetchData() {
+      const category = document.getElementById("category").value;
+      const commodity = document.getElementById("commodity").value;
+      const location = document.getElementById("location").value;
+      const limit = document.getElementById("limit").value;
+
+      if (!category || !commodity || !location || !limit) {
+        // showErrorPopup('Please select all filters: Category, Commodity, Location, and Time Limit');
+        showAutoHidePopup();
+        return; // Exit function early
+      }
+
+      // Show all loading animations
+      document.querySelectorAll(".loading").forEach((loader) => {
+        loader.style.display = "block";
+      });
+
+      // When loading starts:
+      document.querySelector('.info-card-skeleton').style.display = 'flex';
+      // document.querySelector('.loaded-content').style.display = 'none';
+
+      try {
+        //API call
+        const commodityPriceData = await fetch(
+          `http://localhost:3000/marketData/getCommodityData?commodity=${commodity}&location=${location}&limit=${limit}`
+        );
+        const commodityPriceDataResponse = await commodityPriceData.json();
+        //   console.log(commodityPriceDataResponse);
+        const pricesAndDates = {
+          labels: commodityPriceDataResponse.data.map(
+            (item) => item.date.split("T")[0]
+          ),
+          values: commodityPriceDataResponse.data.map((item) => item.price),
+        };
+        //   console.log(pricesAndDates);
+
+        console.log(limit)
+        const priceTrendData = await fetch(
+          `http://localhost:3000/marketData/trends/${commodity}/${location}/${limit}`
+        );
+        const priceTrendDataResponse = await priceTrendData.json();
+        //   console.log(priceTrendDataResponse);
+        const priceTrendFormattedData = convertAPIDataToPriceTrend(priceTrendDataResponse);
+        // console.log("trend formatted data: ", priceTrendFormattedData);
+
+        const predictData = await fetch(
+          `http://localhost:3000/marketData/prediction/${commodity}/${location}/${limit}`
+        );
+        const predictDataResponse = await predictData.json();
+        console.log(predictDataResponse);
+        const predictFormattedData =
+          formatPricePredictionData(predictDataResponse);
+        console.log("prediction", predictFormattedData);
+
+        const anomalyData = await fetch(
+          `http://localhost:3000/marketData/anomalies/${location}/${location}/${limit}`
+        );
+        const anomalyDataResponse = await anomalyData.json();
+        //   console.log(anomalyDataResponse);
+        const anomalyFormattedData =
+          convertAPIDataToAnamolyData(anomalyDataResponse);
+
+        const volatilityData = convertAPIDataToVolatility(priceTrendDataResponse)
+        //   console.log("formatted data: ", anomalyFormattedData);
+
+        // Usage in fetchData:
+        // const demoData = generateDemoData(limit);
+        // console.log(demoData)
+
+            // Fetch existing data
+    // const [commodityPriceData, priceTrendData, predictData, anomalyData] = await Promise.all([
+    //   fetch(`http://localhost:3000/marketData/getCommodityData?commodity=${commodity}&location=${location}&limit=${limit}`).then(res => res.json()),
+    //   fetch(`http://localhost:3000/marketData/trends/${commodity}/${location}/${limit}`).then(res => res.json()),
+    //   fetch(`http://localhost:3000/marketData/prediction/${commodity}/${location}/${limit}`).then(res => res.json()),
+    //   fetch(`http://localhost:3000/marketData/anomalies/${location}/${location}/${limit}`).then(res => res.json())
+    // ]);
+
+        // Fetch market analysis data
+        const analysisResponse = await fetch(`http://localhost:3000/marketData/analysis/${commodity}/${location}/${limit}`);
+    const analysisData = await analysisResponse.json();
+
+        // Get summary from chatbot
+        const summary = await getMarketAnalysisSummary(analysisData);
+
+        // Update info card with summary
+        updateInfoCard(summary);
+
+        // Destroy existing charts properly
+        Object.entries(charts).forEach(([id, chart]) => {
+          if (chart) {
+            chart.destroy();
+            charts[id] = null;
+          }
+        });
+
+        //   Create all charts
+        createChart(
+          "myChart",
+          "Commodity Prices",
+          pricesAndDates,
+          {},
+          "rgb(75, 192, 192)"
+        );
+
+        createChart(
+          "priceTrendChart",
+          "Price Trend Analysis",
+          priceTrendFormattedData,
+          {},
+          "rgb(255, 159, 64)"
+        );
+
+        createChart(
+          "volatilityChart",
+          "Volatility Analysis",
+          volatilityData,
+          {},
+          "rgb(255, 159, 64)"
+        );
+
+        createChart(
+          "anomalyDetectionChart",
+          "Anomaly Detection",
+          anomalyFormattedData,
+          "rgb(255, 99, 132)"
+        );
+
+        // createChart(
+        //   "pricePredictionChart",
+        //   "Price Prediction",
+        //   predictFormattedData,
+        //   "rgb(54, 162, 235)"
+        // );
+
+      } catch (error) {
+        console.error("Error fetching chart data:", error);
+        updateInfoCard('Error loading market analysis. Please try again later.');
+      } finally {
+        // Hide all loading animations
+        document.querySelectorAll(".loading").forEach((loader) => {
+          loader.style.display = "none";
+          document.querySelector('.info-card').classList.add('loaded');
+        });
+
+        document.querySelector('.info-card-skeleton').style.display = 'none';
+        // document.querySelector('.info-card').classList.add('loaded');
+      }
+    }
+    function getYAxisMax(values) {
+      const maxPrice = Math.max(...values);
+      console.log(Math.max(...values)); // Get the highest price
+      console.log(Math.ceil(maxPrice * 1.25));
+      return Math.ceil(maxPrice * 1.25); // Set max value as 130% of max price
+    }
+
+    // Enhanced Chart Creation
+    function createChart(
+      canvasId,
+      label,
+      data,
+      extraConfig = {},
+      borderColor
+    ) {
+      console.log(canvasId, data);
+
+      // if (!data.currentPrice || !data.predictedPrice) {
+      //     console.error('Missing required price data');
+      // }
+
+      console.log('Canvas ready:', !!document.getElementById('pricePredictionChart'));
+
+      // First, check if the canvas exists
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) {
+        console.error(`Canvas with id ${canvasId} not found`);
+        console.log(canvasId);
+        return;
+      }
+
+      const ctx = document.getElementById(canvasId).getContext("2d");
+
+      // Destroy existing chart
+      if (charts[canvasId] instanceof Chart) {
+        charts[canvasId].destroy();
+      }
+
+      const commonOptions = {
+        responsive: false,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "top" } },
+      };
+
+      const configs = {
+
+        pricePredictionChart: {
+          type: "line", // Changed to line chart
+          data: {
+            labels: ["Current Price", "Predicted Price"],
+            datasets: [
+              {
+                label: "Price Prediction",
+                data: [100 || 0, 200 || 0],
+                backgroundColor: "rgba(75, 192, 192, 0.2)", // Light fill
+                borderColor: "rgb(75, 192, 192)", // Solid line color
+                borderWidth: 2,
+                tension: 0.4, // Adds curve to the line
+                fill: true, // Fill area under line
+                pointRadius: 6, // Larger points
+                pointBackgroundColor: [
+                  "rgb(75, 192, 192)",
+                  "rgb(54, 162, 235)",
+                ],
+                pointBorderColor: ["rgb(75, 192, 192)", "rgb(54, 162, 235)"],
+                pointHoverRadius: 8,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                max: Math.floor(
+                  Math.max(data.currentPrice, data.predictedPrice) * 1.05
+                ),
+                min: Math.floor(
+                  Math.min(data.currentPrice, data.predictedPrice) * 0.95
+                ),
+                grid: {
+                  display: true,
+                },
+                ticks: {
+                  callback: (value) => `${value}`,
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                callbacks: {
+                  label: (context) => {
+                    return `${context.raw} INR`;
+                  },
+                },
+              },
+            },
+          },
+        },
+
+        myChart: {
+          type: "line",
+          data: {
+            labels: data.labels,
+            datasets: [
+              {
+                label: label,
+                data: data.values,
+                borderColor: borderColor,
+                tension: 0.1,
+                fill: false,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: getYAxisMax(data.values),
+              },
+            },
+          },
+        },
+
+
+        // priceTrendChart: {
+        //   type: "bar",
+        //   data: {
+        //     labels: ["Price Metrics", ""], // Added empty label for trend line endpoint
+        //     datasets: [
+        //       {
+        //         label: "Avg Price",
+        //         data: [data.values[2], null], // null for second point to only show one bar
+        //         backgroundColor: "#4bc0c0",
+        //         yAxisID: "priceAxis",
+        //         order: 1,
+        //         borderRadius: {
+        //           topLeft: 10,
+        //           topRight: 10,
+        //           bottomLeft: 0,
+        //           bottomRight: 0,
+        //         },
+        //       },
+        //       {
+        //         label: "Min Price",
+        //         data: [data.values[3], null],
+        //         backgroundColor: "#36a2eb",
+        //         yAxisID: "priceAxis",
+        //         order: 2,
+        //         borderRadius: {
+        //           topLeft: 10,
+        //           topRight: 10,
+        //           bottomLeft: 0,
+        //           bottomRight: 0,
+        //         },
+        //       },
+        //       {
+        //         label: "Max Price",
+        //         data: [data.values[4], null],
+        //         backgroundColor: "#9966ff",
+        //         yAxisID: "priceAxis",
+        //         order: 3,
+        //         borderRadius: {
+        //           topLeft: 10,
+        //           topRight: 10,
+        //           bottomLeft: 0,
+        //           bottomRight: 0,
+        //         },
+        //       },
+        //       {
+        //         label: "Volatility",
+        //         type: "line",
+        //         data: [null, data.values[1]], // Same value for straight line
+        //         borderColor: "#ff6384",
+        //         yAxisID: "volatilityAxis",
+        //         borderWidth: 3,
+        //         fill: false,
+        //         order: 4,
+        //         pointStyle: "circle",
+        //       },
+        //       {
+        //         label: "Trend",
+        //         type: "line",
+        //         data: [data.values[2], data.values[2] * (1 + data.values[0])], // Start from avg price, end at trend value
+        //         borderColor: data.values[0] < 0 ? "red" : "green",
+        //         borderWidth: 2,
+        //         yAxisID: "priceAxis",
+        //         fill: false,
+        //         pointRadius: 0, // Remove points
+        //         tension: 0, // Straight line
+        //         borderDash: [5, 5],
+        //         order: 0,
+        //       },
+        //     ],
+        //   },
+        //   options: {
+        //     responsive: true,
+        //     maintainAspectRatio: false,
+        //     scales: {
+        //       x: {
+        //         grid: {
+        //           display: true,
+        //         },
+        //       },
+        //       priceAxis: {
+        //         type: "linear",
+        //         position: "left",
+        //         title: {
+        //           display: true,
+        //           text: "Price (USD)",
+        //         },
+        //         grid: {
+        //           drawOnChartArea: true,
+        //         },
+        //       },
+        //       volatilityAxis: {
+        //         type: "linear",
+        //         position: "right",
+        //         title: {
+        //           display: true,
+        //           text: "Volatility %",
+        //         },
+        //         grid: {
+        //           drawOnChartArea: false,
+        //         },
+        //       },
+        //     },
+        //     plugins: {
+        //       tooltip: {
+        //         callbacks: {
+        //           label: (ctx) => {
+        //             const label = ctx.dataset.label || "";
+        //             const value = ctx.raw;
+        //             return `${label}: ${value}${ctx.datasetIndex < 3 ? "$" : "%"
+        //               }`;
+        //           },
+        //         },
+        //       },
+        //       legend: {
+        //         display: true,
+        //         position: "top",
+        //       },
+        //     },
+        //   },
+        // },
+        priceTrendChart: {
+  type: "bar",
+  data: {
+    labels: ["Price Statistics"],
+    datasets: [
+      {
+        label: "Average Price",
+        data: [data.values[2]],
+        backgroundColor: "#4bc0c0",
+        borderRadius: {
+          topLeft: 10,
+          topRight: 10,
+          bottomLeft: 0,
+          bottomRight: 0
+        }
+      },
+      {
+        label: "Min Price",
+        data: [data.values[3]],
+        backgroundColor: "#36a2eb",
+        borderRadius: {
+          topLeft: 10,
+          topRight: 10,
+          bottomLeft: 0,
+          bottomRight: 0
+        }
+      },
+      {
+        label: "Max Price",
+        data: [data.values[4]],
+        backgroundColor: "#9966ff",
+        borderRadius: {
+          topLeft: 10,
+          topRight: 10,
+          bottomLeft: 0,
+          bottomRight: 0
+        }
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Price (₹)",
+          font: {
+            size: 14,
+            weight: 'bold'
+          }
+        }
+      }
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: (ctx) => {
+            const label = ctx.dataset.label || "";
+            const value = ctx.raw;
+            return `${label}: ₹${value}`;
+          }
+        }
+      },
+      legend: {
+        display: true,
+        position: "top"
+      }
+    }
+  }
+},
+volatilityChart: {
+        type: 'line',
+        data: {
+            labels: data.volatilityData.labels,
+            datasets: [{
+                label: 'Daily Price Volatility',
+                data: data.volatilityData.values,
+                borderColor: '#ff6384',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Volatility (%)',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => `Volatility: ${ctx.raw.toFixed(2)}%`
+                    }
+                }
+            }
+        }
+    },
+
+        anomalyDetectionChart: {
+          type: "scatter",
+          data: {
+            labels: data.labels,
+            datasets: [
+              {
+                label: "Price",
+                data: data.values.map((v, i) => ({
+                  x: i,
+                  y: v,
+                })),
+                borderColor: "#36a2eb",
+                backgroundColor: "rgba(54, 162, 235, 0.1)",
+                pointRadius: 3,
+                pointHoverRadius: 6,
+                pointStyle: "circle",
+                showLine: true, // Connect points with a line
+                tension: 0.4, // Slight curve for the line
+                borderWidth: 2,
+                // Animation for the line drawing
+                segment: {
+                  borderColor: (ctx) => "#36a2eb",
+                },
+              },
+              {
+                label: "Anomalies",
+                data:
+                  data.values
+                    ?.map((value, index) => ({
+                      x: index,
+                      y: value,
+                      anomaly: value !== null,
+                    }))
+                    .filter((point) => point.anomaly) || [],
+                backgroundColor: "rgba(255, 99, 132, 0.8)",
+                borderColor: "rgba(255, 99, 132, 1)",
+                pointRadius: 8,
+                pointHoverRadius: 12,
+                pointStyle: "rectRot", // Rectangle rotated 45 degrees
+                borderWidth: 2,
+              },
+            ],
+          },
+
+          options: {
+            ...commonOptions,
+            responsive: true,
+            animation: {
+              duration: 1000,
+              easing: "easeInOutQuart",
+            },
+            scales: {
+              x: {
+                type: "linear", // Changed from 'time' to 'linear'
+                position: "bottom",
+                title: {
+                  display: true,
+                  text: "Time Period",
+                },
+                ticks: {
+                  callback: function (value) {
+                    // Use the labels array to show actual dates/periods
+                    return data.labels[value] || "";
+                  },
+                },
+                grid: {
+                  display: true,
+                  color: "rgba(0, 0, 0, 0.1)",
+                },
+              },
+              y: {
+                beginAtZero: false,
+                title: {
+                  display: true,
+                  text: "Price",
+                },
+                grid: {
+                  display: true,
+                  color: "rgba(0, 0, 0, 0.1)",
+                },
+              },
+            },
+            interaction: {
+              intersect: false,
+              mode: "nearest",
+            },
+            plugins: {
+              legend: {
+                position: "top",
+              },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => {
+                    const point = ctx.raw;
+                    const label = ctx.dataset.label;
+                    const value = point.y.toFixed(2);
+                    return `${label}: $${value}${ctx.datasetIndex === 1 ? " (Anomaly)" : ""
+                      }`;
+                  },
+                  title: (ctx) => {
+                    // Use the labels array to show the actual date/period
+                    return data.labels[ctx[0].parsed.x];
+                  },
+                },
+                backgroundColor: "rgba(0, 0, 0, 0.8)",
+                padding: 10,
+                cornerRadius: 6,
+              },
+            },
+          },
+        },
+      };
+
+      charts[canvasId] = new Chart(ctx, configs[canvasId]);
+    }
+
+    function showAutoHidePopup() {
+      const popup = document.getElementById('statusPopup');
+      popup.classList.add('visible');
+
+      // Auto-hide after 3 seconds
+      setTimeout(() => {
+        popup.classList.remove('visible');
+      }, 3000);
+    }
+
+    function hidePopup() {
+      const popup = document.getElementById('statusPopup');
+      popup.classList.remove('visible');
+    }
+
+    // Automatically show popup when page loads
+    window.addEventListener('load', () => {
+      setTimeout(showAutoHidePopup, 100); // Show after 1 second
+    });
+  </script>
+</body>
+
+</html>

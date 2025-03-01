@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Pop-Up Alerts</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="container">
+        <button class="success-btn" onclick="s_openPop()">Success!</button>
+        <button class="alert-btn" onclick="a_openPop()">Alert!</button>
+        <div class="popup" id="sPop">
+            <img src="tick.png" alt="tick">
+            <h2>Thank You!</h2>
+            <p> The operation was a Success! </p>
+            <button type="button" onclick="s_closePop()">Ok</button>
+        </div>
+        <div class="a_popup" id="aPop">
+            <img src="alert.png" alt="tick">
+            <h2>Alert!</h2>
+            <p> This is an alert! </p>
+            <button type="button" onclick="a_closePop()">Ok</button>
+        </div>
+    </div>
+</body>
+<script>
+    let success = document.getElementById("sPop");
+    let Alert = document.getElementById("aPop");
+    function s_openPop() {
+        success.classList.add("open-pop");
+    }
+    function s_closePop() {
+        success.classList.remove("open-pop");
+    }
+
+    function a_openPop() {
+        Alert.classList.add("open-pop");
+    }
+    function a_closePop() {
+        Alert.classList.remove("open-pop");
+    }
+
+</script>
+</html>

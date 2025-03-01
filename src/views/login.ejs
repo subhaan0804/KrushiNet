@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/popup.css">
+    <link rel="stylesheet" href="/css/styles.css">
+<script src="/js/sessionManager.js" defer></script>
+</head>
+<body>
+    <div class="gradient-container">
+        <div class="animated-blob blob1"></div>
+        <div class="animated-blob blob2"></div>
+        <div class="animated-blob blob3"></div>
+    </div>
+    <header>
+        <div class="inhead">
+            <span class="logo">
+                <img src="/images/logo.png" alt="logo">
+                <h1>Krushi<span class="highlight">Net</span></h1>
+            </span>
+            <div class="container">
+                <nav>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="/marketplace/listings/view">Market</a></li>
+                        <li><a href="#">Market Analysis</a></li>
+                        <%- include('partials/authNav') %>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <main>
+        <form id="login-form" action="/login" method="POST" class="login-form">
+            <section class="form-section">
+                <h2 class="title"><span class="highlight">Login</span></h2>
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-envelope"></i>
+                        Email:<span class="required-asterisk">*</span>
+                    </label>
+                    <input type="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-lock"></i>
+                        Password:<span class="required-asterisk">*</span>
+                    </label>
+                    <div class="password-wrapper">
+                        <input type="password" name="password" id="password" placeholder="Enter your password" required>
+                        <i class="fas fa-eye toggle-password" id="toggle-password"></i>
+                    </div>
+                </div>
+                <hr class="divider">
+                <p class="forgot-password"><a href="/forgot-password"><span>Forgot Password?</span></a></p>
+                <button type="submit" class="submit-btn">Login</button>
+                <p class="already-account">Don't have an account? <a href="/auth/register"><span>SignUp here</span></a></p>
+            </section>
+        </form>
+    </main>
+    <script>
+        // Toggle password visibility
+        document.getElementById('toggle-password').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        // Form submission handler
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+        
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: formData.get('email'),
+                        password: formData.get('password')
+                    })
+                });
+        
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    window.location.href = '/marketplace/listings/view';
+                } else {
+                    throw new Error(data.message || 'Login failed');
+                }
+            } catch (error) {
+                document.getElementById('alertMessage').textContent = error.message;
+                document.getElementById('alertPopup').classList.add('open-pop');
+                document.getElementById('popupOverlay').style.display = 'block';
+            }
+        });
+        // Popup close functions
+        function closeSuccessPopup() {
+            document.getElementById('successPopup').classList.remove('open-pop');
+            document.getElementById('popupOverlay').style.display = 'none';
+            window.location.href = '/dashboard'; // Redirect only after clicking OK
+        }
+        
+        function closeAlertPopup() {
+            document.getElementById('alertPopup').classList.remove('open-pop');
+            document.getElementById('popupOverlay').style.display = 'none';
+        }
+    </script>
+
+    <!-- These are the popups -->
+    <div class="popup-overlay" id="popupOverlay"></div>
+    <div class="popup success-popup" id="successPopup">
+        <img src="/images/tick.png" alt="Success">
+        <h2>Success!</h2>
+        <p id="successMessage"></p>
+        <button type="button" onclick="closeSuccessPopup()">OK</button>
+    </div>
+    
+    <div class="popup alert-popup" id="alertPopup">
+        <img src="/images/alert.png" alt="Alert">
+        <h2>Alert!</h2>
+        <p id="alertMessage"></p>
+        <button type="button" onclick="closeAlertPopup()">OK</button>
+    </div>
+
+</body>
+</html>

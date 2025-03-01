@@ -1,0 +1,13 @@
+<li id="authNav">
+    <% if (locals.user) { %>
+        <div class="dropdown">
+            <a href="#" class="highlight dropdown-toggle"><%= user.firstName %> ▼</a>
+            <div class="dropdown-content">
+                <a href="/user/profile">User Profile</a>
+                <a href="#" onclick="logout(event)">Logout</a>
+            </div>
+        </div>
+    <% } else { %>
+        <a href="/auth/login">Login/SignUp</a>
+    <% } %>
+</li>

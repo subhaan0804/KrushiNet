@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market</title>
+    <link rel="stylesheet" href="/css/listings.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/popup.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="/js/sessionManager.js" defer></script>
+</head>
+<body>
+    <div class="gradient-container">
+        <div class="animated-blob blob1"></div>
+        <div class="animated-blob blob2"></div>
+        <div class="animated-blob blob3"></div>
+        <div class="animated-blob blob4"></div>
+    </div>
+    <header>
+    <div class="inhead">
+        <span class="logo">
+            <img src="/images/logo.png" alt="logo">
+            <h1>Krushi<span class="highlight">Net</span></h1>
+        </span>
+        <div class="container">
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/marketplace/listings/view">Market</a></li>
+                    <li><a href="/market-analysis">Market Analysis</a></li>
+                    <%- include('partials/authNav') %>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<!-- Add this code after the </header> tag and before <div class="main-content"> -->
+<div class="sell-button-container">
+    <button id="sellButton" class="sell-button" onclick="goToCreateListing()">
+        <i class="fas fa-plus"></i>
+        Sell Product
+    </button>
+</div>
+
+    <div class="main-content">
+        <div class="related-categories">
+            <div class="category-header">
+                <i class="fas fa-arrow-left back-arrow"></i>
+                <h2 class="category-title">Categories</h2>
+            </div>
+            <ul class="category-list">
+                <!-- Categories will be dynamically added here -->
+            </ul>
+        </div>
+        <div class="listing-cards-container">
+            <!-- Dummy cards will be added here through JavaScript -->
+        </div>
+    </div>
+
+    <!-- Add this after your main-content div -->
+    <div class="listing-details-view" style="display: none;">
+        <div class="listing-header">
+            <button class="back-to-listings">
+                <i class="fas fa-arrow-left"></i> Back to Listings
+            </button>
+        </div>
+        
+        <!-- Update your listing details container structure -->
+        <div class="listing-details-container">
+            <div class="top-section">
+                <div class="left-section">
+                    <div class="listing-image-large">
+                        <img src="" alt="Product Image" id="listing-detail-image">
+                    </div>
+                    <div class="listing-price-section">
+
+                        <div class="price"></div>
+                        <div class="quantity"></div>
+                    </div>
+                </div>
+
+                <div class="right-section">
+                    <div class="right-section-header">
+                    </div>
+                    <div class="map-container">
+                        <div id="map"></div>
+                    </div>
+                    <div class="seller-info">
+                        <div class="seller-info-left">
+                            <h3 class="seller-name" id="seller-name">Seller Name</h3>
+                            <p class="seller-location" id="seller-location">Location</p>
+                        </div>
+                        <button class="contact-button">Seller Details</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bottom-section">
+                <div class="listing-description">
+                    <h3>Description</h3>
+                    <p id="listing-description-text">Product description will be loaded here.</p>
+                </div>
+                <!-- Reviews section remains unchanged -->
+            </div>
+        </div>
+
+        <div class="reviews-section">
+            <div class="reviews-header">
+                <h3>Reviews</h3>
+                <button class="add-review-btn">Write a Review</button>
+            </div>
+            
+            <!-- Rating statistics -->
+            <div class="rating-stats">
+                <div class="average-rating">
+                    <span class="rating-number">0.0</span>
+                    <div class="rating-stars"></div>
+                    <span class="total-reviews">0 reviews</span>
+                </div>
+                
+                <div class="rating-bars">
+                    <div class="rating-bar" data-rating="5">
+                        <span>5★</span>
+                        <div class="bar-container"><div class="bar"></div></div>
+                        <span class="count">0%</span>
+                    </div>
+                    <div class="rating-bar" data-rating="4">
+                        <span>4★</span>
+                        <div class="bar-container"><div class="bar"></div></div>
+                        <span class="count">0%</span>
+                    </div>
+                    <div class="rating-bar" data-rating="3">
+                        <span>3★</span>
+                        <div class="bar-container"><div class="bar"></div></div>
+                        <span class="count">0%</span>
+                    </div>
+                    <div class="rating-bar" data-rating="2">
+                        <span>2★</span>
+                        <div class="bar-container"><div class="bar"></div></div>
+                        <span class="count">0%</span>
+                    </div>
+                    <div class="rating-bar" data-rating="1">
+                        <span>1★</span>
+                        <div class="bar-container"><div class="bar"></div></div>
+                        <span class="count">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews list -->
+            <div class="reviews-list"></div>
+
+            <!-- Review form -->
+            <div class="review-form-section" style="display: none;">
+                <button class="back-to-reviews-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Reviews
+                </button>
+                <form id="reviewForm">
+                    <div class="star-rating-input">
+                        <label>Rating:</label>
+                        <div class="interactive-stars">
+                            <i class="far fa-star" data-rating="1"></i>
+                            <i class="far fa-star" data-rating="2"></i>
+                            <i class="far fa-star" data-rating="3"></i>
+                            <i class="far fa-star" data-rating="4"></i>
+                            <i class="far fa-star" data-rating="5"></i>
+                        </div>
+                        <span class="rating-text">Click to rate</span>
+                    </div>
+                    <textarea id="reviewText" placeholder="Write your review here..." required></textarea>
+                    <button type="submit">Submit Review</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Information Popup -->
+    <div class="contact-popup" style="display: none;">
+        <div class="popup-content">
+            <h3>Contact Information</h3>
+            <p class="seller-full-name">Full Name: <span id="full-name"></span></p>
+            <p class="seller-phone">Phone: <span id="phone-number"></span></p>
+            <p class="seller-address"> <span id="full-address"></span></p>
+            <button class="close-popup">Close</button>
+        </div>
+    </div>
+
+    <!-- Add zoom modal -->
+    <div class="zoom-modal">
+        <button class="close-zoom">
+            <i class="fas fa-times"></i> Close
+        </button>
+        <div class="zoom-modal-content">
+            <img src="" alt="Zoomed Image" id="zoomed-image">
+        </div>
+    </div>
+
+    <script>
+    // Add this function at the start of your script tag
+    function checkAuth() {
+        const token = localStorage.getItem('token');
+        return !!token;
+    }
+
+    function goToCreateListing() {
+        if (!checkAuth()) {
+            document.getElementById('alertMessage').textContent = 'Please login to create a listing';
+            document.getElementById('alertPopup').classList.add('open-pop');
+            document.getElementById('popupOverlay').style.display = 'block';
+            return;
+        }
+        
+        // Redirect to create listing page
+        window.location.href = '/marketplace/list';
+    }
+    
+    // Update the toggleFavorite function
+    async function toggleFavorite(event, itemId) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        if (!checkAuth()) {
+            document.getElementById('alertMessage').textContent = 'Please login to add items to favorites';
+            document.getElementById('alertPopup').classList.add('open-pop');
+            document.getElementById('popupOverlay').style.display = 'block';
+            return;
+        }
+
+        const button = event.currentTarget;
+        const icon = button.querySelector('i');
+        
+        try {
+            if (!button.classList.contains('active')) {
+                // Add to favorites
+                const response = await authFetch(`/marketplace/favourites/${itemId}`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    button.classList.add('active');
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    console.log('Added to favorites successfully');
+                }
+            } else {
+                // Remove from favorites
+                const response = await authFetch(`/marketplace/favourites/${itemId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    button.classList.remove('active');
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    console.log('Removed from favorites successfully');
+                }
+            }
+        } catch (error) {
+            console.error('Error toggling favorite:', error);
+            document.getElementById('alertMessage').textContent = 'Failed to update favorites';
+            document.getElementById('alertPopup').classList.add('open-pop');
+            document.getElementById('popupOverlay').style.display = 'block';
+        }
+    }
+
+    // Replace regular fetch with authFetch for authenticated endpoints
+    // In listings.ejs
+
+    // 1. Update the favorites functions
+    async function addToFavorites(itemId) {
+        try {
+            const response = await authFetch('/api/favorites/add', {
+                method: 'POST',
+                body: { itemId }
+            });
+            
+            if (!response.ok) throw new Error('Failed to add favorite');
+        } catch (error) {
+            console.error('Error adding favorite:', error);
+        }
+    }
+
+    async function removeFromFavorites(itemId) {
+        try {
+            const response = await authFetch('/api/favorites/remove', {
+                method: 'DELETE',
+                body: { itemId }
+            });
+            
+            if (!response.ok) throw new Error('Failed to remove favorite');
+        } catch (error) {
+            console.error('Error removing favorite:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeCategories();
+        initializeReviewSystem();
+        initializeZoomFunctionality();
+        initializeEventListeners();
+    });
+
+    function initializeCategories() {
+        const COMMODITIES = {
+            "Crops": ["rice", "cotton", "sugarcane", "wheat", "pulses", "soybean", "millets", 
+                "jowar", "maize", "opium", "castor", "mint", "groundnuts", "coffee", 
+                "barley", "tea"],
+            "Root Vegetables": ["carrot", "onion", "potato", "tomatoes", "chilis", "cabbage", 
+                "brinjal", "radish", "garlic", "mushroom"],
+            "Fruits": ["apples", "bananas", "mangoes", "dragon fruit", "blackberry", "blueberry", 
+                "grapes", "pineapple", "avocado", "watermelon", "lychee", "pear", "papaya", 
+                "kiwi", "oranges"],
+            "Spices": ["cinnamon", "cloves", "cumin", "cardamom", "coriander seed", "carom seeds", 
+                "nutmeg", "fennel", "black pepper", "dry red chilli", "curry leaves", "asafoetida"],
+            "Organic": ["organic oil", "organic herbs", "organic sweetener", "organic flour", 
+                "organic dairy products", "organic pulses", "organic spices"],
+            "Nursery and Plants": ["indoor plants", "outdoor plants", "garden plants", 
+                "flowering plants", "fruit plants"],
+            "Dry Fruits": ["almond", "walnut", "cashew", "figs", "dates", "pistachios", 
+                "apricot", "fox nuts", "coconut", "pine nut", "hazelnut"],
+            "Animals": ["goat", "sheep", "cow", "buffalo", "chicken"],
+            "Seeds": ["vegetable seeds", "flower seeds", "herb seeds", "fruit seeds", "grain seed"]
+        };
+
+        const categoryList = document.querySelector('.category-list');
+        const backArrow = document.querySelector('.back-arrow');
+        const categoryTitle = document.querySelector('.category-title');
+        const contactPopup = document.querySelector('.contact-popup');
+        const reviewsList = document.querySelector('.reviews-list');
+        const reviewForm = document.querySelector('.review-form-section');
+        // Remove const listingContainer = document.querySelector('.listing-cards-container');
+
+        // Show back arrow by default with "Back to All Items" text
+        backArrow.style.display = 'flex';
+
+        // Load initial categories
+        loadCategories();
+
+        // Update the loadCategories function and click handlers
+        function loadCategories() {
+            let html = '';
+            Object.keys(COMMODITIES).forEach(category => {
+                html += `
+                    <li class="category-item" data-category="${category}">
+                        <a href="#">${category}</a>
+                    </li>
+                `;
+            });
+            categoryList.innerHTML = html;
+            categoryTitle.textContent = 'Categories';
+            // Hide back arrow when showing categories
+            backArrow.style.display = 'none';
+        }
+
+        // Update category click handler - remove listing cards part
+        categoryList.addEventListener('click', function(e) {
+            const categoryItem = e.target.closest('.category-item');
+            const subcategoryItem = e.target.closest('.subcategory-item');
+            
+            if (categoryItem) {
+                console.log(categoryItem) 
+                const category = categoryItem.dataset.category;
+                console.log(categoryItem) 
+                loadCategoryItems(category);
+                // Show back arrow only when viewing commodities
+                backArrow.style.display = 'flex';
+                categoryTitle.textContent = category;
+                backArrow.innerHTML = 'Categories'; // Changed text
+            } else if (subcategoryItem) {
+                const item = subcategoryItem.querySelector('a').dataset.item;
+                console.log("Selected commodity:", item); // Debug log
+                fetchListings(item);
+            }
+        });
+
+        // Update the back arrow click handler to only handle category navigation
+        backArrow.addEventListener('click', function() {
+            // Simply go back to categories view
+            loadCategories();
+            backArrow.style.display = 'none';  // Hide back arrow after returning to categories
+            categoryTitle.textContent = 'Categories';
+            backArrow.innerHTML = `<i class="fas fa-arrow-left"></i>Categories`;
+        });
+
+        // Update the loadCategoryItems function
+        function loadCategoryItems(category) {
+            const items = COMMODITIES[category];
+            let html = '';
+            items.forEach(item => {
+                const capitalizedItem = item.charAt(0).toUpperCase() + item.slice(1);
+                const imageName = item.toLowerCase().replace(/\s+/g, '-'); // Convert spaces to hyphens
+                html += `
+                    <li class="subcategory-item">
+                        <img src="/images/${imageName}.jpg" 
+                             alt="${capitalizedItem}" 
+                             onerror="this.src='/images/default.jpg'"
+                             class="commodity-image"/>
+                        <a href="#" data-item="${item}">${capitalizedItem}</a>
+                    </li>
+                `;
+            });
+            categoryList.innerHTML = html;
+        }
+        
+        async function fetchListings(commodity) {
+            const listingContainer = document.querySelector('.listing-cards-container');
+            listingContainer.style.display = 'grid';
+            
+            try {
+                // First fetch user's favorites if authenticated
+                let userFavorites = [];
+                if (checkAuth()) {
+                    const favResponse = await authFetch('/marketplace/favourites');
+                    userFavorites = (await favResponse.json()).favourites.map(fav => fav._id);
+                }
+
+                // Keep this as regular fetch since it's public data
+                const response = await fetch(`/marketplace/search?q=${encodeURIComponent(commodity)}`);
+                const data = await response.json();
+
+                if (!data.listings || data.listings.length === 0) {
+                    listingContainer.innerHTML = '<p class="no-listings">No listings found for this commodity</p>';
+                    return;
+                }
+
+                let html = '';
+                data.listings.forEach(listing => {
+                    const isFavorite = userFavorites.includes(listing._id);
+                    const timeAgo = getTimeAgo(new Date(listing.createdAt));
+                    const sellerLocation = listing.sellerId ? 
+                        `${listing.sellerId.city || ''}, ${listing.sellerId.state || ''}`.trim() : 
+                        'Location Not Available';
+
+                    html += `
+                        <div class="listing-card" data-id="${listing._id}">
+                            <div class="listing-image-container">
+                                <img src="${listing.imageUrl || '/images/default.jpg'}" 
+                                     alt="${listing.name}" 
+                                     class="listing-image"
+                                     onerror="this.src='/images/default.jpg'">
+                            </div>
+                            <div class="listing-details">
+                                <h3 class="listing-title">${listing.name}</h3>
+                                <p class="listing-price">₹${listing.price}/kg</p>
+                                <p class="listing-timestamp">${timeAgo}</p>
+                                <div class="favorite-container">
+                                    <button class="favorite-btn ${isFavorite ? 'active' : ''}" 
+                                            onclick="toggleFavorite(event, '${listing._id}')"
+                                            type="button">
+                                        <i class="fa-heart ${isFavorite ? 'fas' : 'far'}"></i>
+                                    </button>
+                                </div>
+                                <div class="listing-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>${sellerLocation}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                listingContainer.innerHTML = html;
+            } catch (error) {
+                console.error('Error fetching listings:', error);
+                listingContainer.innerHTML = `<p class="error-message">Failed to load listings: ${error.message}</p>`;
+            }
+        }
+
+        // Add helper function for timestamp formatting
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+            const diffMinutes = Math.floor(diffTime / (1000 * 60));
+
+            if (diffDays > 0) {
+                return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
+            } else if (diffHours > 0) {
+                return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
+            } else {
+                return `${diffMinutes} ${diffMinutes === 1 ? 'minute' : 'minutes'} ago`;
+            }
+        }
+
+        const listingDetailsView = document.querySelector('.listing-details-view');
+        const mainContent = document.querySelector('.main-content');
+        const backToListingsBtn = document.querySelector('.back-to-listings');
+        const contactButton = document.querySelector('.contact-button');
+        const closePopupBtn = document.querySelector('.close-popup');
+
+        // Add this in your listing card click handler
+        document.querySelector('.listing-cards-container').addEventListener('click', async function(e) {
+            const listingCard = e.target.closest('.listing-card');
+            if (listingCard && !e.target.classList.contains('favorite-icon')) {
+                currentListingId = listingCard.dataset.id; // Set currentListingId
+                console.log('Current listing ID:', currentListingId); // Debug log
+                
+                try {
+                    // Change listingId to currentListingId here
+                    const response = await fetch(`/marketplace/list/${currentListingId}`);
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch listing details');
+                    }
+                    
+                    const listing = await response.json();
+                    console.log('Listing details:', listing); // Debug log
+
+                    // Update listing details
+                    document.getElementById('listing-detail-image').src = listing.imageUrl || '/images/default.jpg';
+                    document.getElementById('listing-price').textContent = listing.price;
+                    document.getElementById('listing-quantity').textContent = listing.quantity;
+                    document.getElementById('listing-description-text').textContent = listing.description || 'No description available';
+
+                    // Update seller information
+                    if (listing.sellerId) {
+                        const sellerName = `${listing.sellerId.firstName || ''} ${listing.sellerId.lastName || ''}`.trim();
+                        const sellerLocation = `Location: ${listing.sellerId.city || ''}, ${listing.sellerId.state || ''}`.trim();
+                        
+                        document.getElementById('seller-name').textContent = sellerName || 'Seller Name Not Available';
+                        document.getElementById('seller-location').textContent = sellerLocation || 'Location Not Available';
+
+                        // Update contact popup information
+                        document.getElementById('full-name').textContent = sellerName;
+                        document.getElementById('phone-number').textContent = listing.sellerId.phoneNo || 'Phone Not Available';
+                        document.getElementById('full-address').textContent = sellerLocation;
+                    }
+
+                    // Show details view
+                    mainContent.style.display = 'none';
+                    listingDetailsView.style.display = 'block';
+
+                } catch (error) {
+                    console.error('Error fetching listing details:', error);
+                    showAlert('Failed to load listing details. Please try again.');
+                }
+            }
+        });
+
+        // Update the back button functionality
+        backToListingsBtn.addEventListener('click', function() {
+            listingDetailsView.style.display = 'none';
+            document.querySelector('.main-content').style.display = 'flex'; // Change back to flex
+        });
+
+        // Contact button functionality
+        contactButton.addEventListener('click', function() {
+            if (!checkAuth()) {
+                // Show friendly message without redirect
+                document.getElementById('alertMessage').textContent = 'Please login to view seller information. You can continue browsing listings.';
+                document.getElementById('alertPopup').classList.add('open-pop');
+                document.getElementById('popupOverlay').style.display = 'block';
+                return;
+            }
+            // Show contact popup only if authenticated
+            contactPopup.style.display = 'flex';
+        });
+
+        // Close popup button functionality
+        closePopupBtn.addEventListener('click', function() {
+            contactPopup.style.display = 'none';
+        });
+
+        // Close popup when clicking outside
+        contactPopup.addEventListener('click', function(e) {
+            if (e.target === contactPopup) {
+                contactPopup.style.display = 'none';
+            }
+        });
+
+        // Update the fetch URL
+        fetch('/marketplace/listings/data')  // Changed from /marketplace/listings
+            .then(response => response.json())
+            .then(data => {
+                // Handle listings data
+            });
+
+        // Add this event listener for listing cards
+        document.querySelector('.listing-cards-container').addEventListener('click', function(e) {
+            const listingCard = e.target.closest('.listing-card');
+            if (listingCard && !e.target.classList.contains('favorite-icon')) {  // Add check for favorite icon
+                const title = listingCard.querySelector('.listing-title').textContent;
+                const price = listingCard.querySelector('.listing-price').textContent;
+                const location = listingCard.querySelector('.listing-location span').textContent;
+                const imageUrl = listingCard.querySelector('.listing-image').src;
+
+                // Fix price format
+                const priceNumber = price.replace('₹', '').replace('/kg', '');
+                
+                // Update listing details view
+                document.getElementById('listing-detail-image').src = imageUrl;
+                document.getElementById('listing-price').textContent = priceNumber;
+                document.getElementById('listing-description-text').textContent = `Details for ${title}`;
+                document.getElementById('seller-location').textContent = location;
+
+                // Hide main content and show details view
+                document.querySelector('.main-content').style.display = 'none';
+                document.querySelector('.listing-details-view').style.display = 'block';
+                
+                // Fetch and display reviews
+                fetchAndDisplayReviews();
+            }
+        });
+
+        let selectedRating = 0;
+
+        function initializeReviewSystem() {
+            const ratingStars = document.querySelectorAll('.interactive-stars i');
+            const reviewForm = document.getElementById('reviewForm');
+            const addReviewBtn = document.querySelector('.add-review-btn');
+            const backToReviewsBtn = document.querySelector('.back-to-reviews-btn');
+
+            // Star rating functionality
+            ratingStars.forEach(star => {
+                star.addEventListener('click', function() {
+                    selectedRating = parseInt(this.dataset.rating);
+                    updateStars(selectedRating);
+                    updateRatingText(selectedRating);
+                });
+
+                star.addEventListener('mouseover', function() {
+                    const rating = parseInt(this.dataset.rating);
+                    updateStars(rating);
+                    updateRatingText(rating);
+                });
+            });
+
+            document.querySelector('.interactive-stars').addEventListener('mouseleave', function() {
+                updateStars(selectedRating);
+                updateRatingText(selectedRating);
+            });
+
+            // Form submission
+            reviewForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                if (!checkAuth()) {
+                    showAlert('Please login to submit a review');
+                    return;
+                }
+
+                if (selectedRating === 0) {
+                    showAlert('Please select a rating by clicking on the stars');
+                    return;
+                }
+
+                try {
+                    const reviewData = {
+                        rating: selectedRating,
+                        comment: document.getElementById('reviewText').value
+                    };
+
+                    const response = await authFetch(`/marketplace/list/${currentListingId}/reviews`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(reviewData)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Failed to submit review');
+                    }
+
+                    // Show success message
+                    showSuccess('Review submitted successfully!');
+
+                    // Reset form and refresh reviews
+                    resetForm();
+                    reviewForm.style.display = 'none';
+                    reviewsList.style.display = 'block';
+                    document.querySelector('.rating-bars').style.display = 'flex';
+
+                } catch (error) {
+                    console.error('Error submitting review:', error);
+                    showAlert(error.message);
+                }
+            });
+        }
+
+        function updateEmptyReviewsDisplay() {
+            document.querySelector('.rating-bars').style.display = 'flex';
+            document.querySelector('.rating-number').textContent = '0.0';
+            document.querySelector('.total-reviews').textContent = '0 reviews';
+            document.querySelector('.rating-stars').innerHTML = Array(5).fill('<i class="far fa-star"></i>').join('');
+            document.querySelector('.reviews-list').innerHTML = '<p class="no-reviews">No reviews yet. Be the first to review!</p>';
+        }
+
+        function displayReviews(reviews) {
+            const reviewsList = document.querySelector('.reviews-list');
+            reviewsList.innerHTML = reviews.map(review => `
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div class="reviewer-details">
+                                <h4>${review.userId.firstName} ${review.userId.lastName}</h4>
+                                <div class="review-stars">${generateStarRating(review.rating)}</div>
+                            </div>
+                        </div>
+                        <span class="review-date">${new Date(review.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <p class="review-text">${review.comment}</p>
+                </div>
+            `).join('');
+        }
+
+        
+        function updateRatingStats(stats) {
+            if (!stats) return;
+
+            const { averageRating, total, distribution } = stats;
+
+            // Update average rating
+            document.querySelector('.rating-number').textContent = averageRating;
+            document.querySelector('.total-reviews').textContent = `${total} ${total === 1 ? 'review' : 'reviews'}`;
+            document.querySelector('.rating-stars').innerHTML = generateStarRating(averageRating);
+
+            // Update distribution bars
+            Object.entries(distribution).forEach(([rating, count]) => {
+                const percentage = total > 0 ? (count / total) * 100 : 0;
+                const bar = document.querySelector(`.rating-bar[data-rating="${rating}"] .bar`);
+                const countElement = document.querySelector(`.rating-bar[data-rating="${rating}"] .count`);
+                
+                if (bar) bar.style.width = `${percentage}%`;
+                if (countElement) countElement.textContent = `${Math.round(percentage)}%`;
+            });
+        }
+
+        function updateReviewsDisplay(reviews) {
+            const reviewsList = document.querySelector('.reviews-list');
+            
+            if (!reviews || reviews.length === 0) {
+                reviewsList.innerHTML = '<p class="no-reviews">No reviews yet. Be the first to review!</p>';
+                return;
+            }
+
+            reviewsList.innerHTML = reviews.map(review => `
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div class="reviewer-details">
+                                <h4>${review.userId.firstName} ${review.userId.lastName}</h4>
+                                <div class="review-stars">${generateStarRating(review.rating)}</div>
+                            </div>
+                        </div>
+                        <span class="review-date">${new Date(review.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <p class="review-text">${review.comment}</p>
+                </div>
+            `).join('');
+        }
+    }
+
+    // Add zoom functionality
+    function initializeZoomFunctionality() {
+        const imageContainer = document.querySelector('.listing-image-large');
+        const zoomModal = document.querySelector('.zoom-modal');
+        const zoomedImage = document.getElementById('zoomed-image');
+        const closeZoom = document.querySelector('.close-zoom');
+        let isZoomed = false;
+
+        // Open zoom modal on image container click
+        imageContainer.addEventListener('click', function() {
+            zoomModal.style.display = 'flex';
+            zoomedImage.src = document.getElementById('listing-detail-image').src;
+        });
+
+        // Rest of the zoom functionality remains the same
+        closeZoom.addEventListener('click', function() {
+            zoomModal.style.display = 'none';
+            isZoomed = false;
+            zoomedImage.style.transform = 'scale(1)';
+        });
+
+        zoomedImage.addEventListener('click', function(e) {
+            if (!isZoomed) {
+                this.style.transform = 'scale(2)';
+                this.style.cursor = 'zoom-out';
+                isZoomed = true;
+            } else {
+                this.style.transform = 'scale(1)';
+                this.style.cursor = 'zoom-in';
+                isZoomed = false;
+            }
+        });
+
+        zoomModal.addEventListener('click', function(e) {
+            if (e.target === zoomModal) {
+                zoomModal.style.display = 'none';
+                isZoomed = false;
+                zoomedImage.style.transform = 'scale(1)';
+            }
+        });
+    }
+
+    // Add this to your existing JavaScript
+    function initializeEventListeners() {
+        const addReviewBtn = document.querySelector('.add-review-btn');
+        const reviewsList = document.querySelector('.reviews-list');
+        const reviewForm = document.querySelector('.review-form-section');
+        const backToReviewsBtn = document.querySelector('.back-to-reviews-btn');
+        const ratingStars = document.querySelectorAll('.interactive-stars i');
+        const ratingText = document.querySelector('.rating-text');
+        const reviewFormElement = document.getElementById('reviewForm');
+        
+        let selectedRating = 0;
+
+        // Show review form
+        addReviewBtn.addEventListener('click', function() {
+            reviewsList.style.display = 'none';
+            reviewForm.style.display = 'block';
+            document.querySelector('.rating-bars').style.display = 'none';
+        });
+
+        // Back to reviews
+        backToReviewsBtn.addEventListener('click', function() {
+            reviewForm.style.display = 'none';
+            reviewsList.style.display = 'block';
+            document.querySelector('.rating-bars').style.display = 'flex';
+            resetForm();
+        });
+
+        // Handle star rating
+        ratingStars.forEach(star => {
+            // Hover effect
+            star.addEventListener('mouseover', function() {
+                const rating = this.dataset.rating;
+                updateStars(rating);
+                updateRatingText(rating);
+            });
+
+            // Click to select
+            star.addEventListener('click', function() {
+                selectedRating = this.dataset.rating;
+                updateStars(selectedRating);
+                updateRatingText(selectedRating);
+            });
+        });
+
+        // Reset stars on mouse leave if no rating selected
+        document.querySelector('.interactive-stars').addEventListener('mouseleave', function() {
+            if (selectedRating === 0) {
+                updateStars(0);
+                ratingText.textContent = 'Click to rate';
+            } else {
+                updateStars(selectedRating);
+                updateRatingText(selectedRating);
+            }
+        });
+
+        // Handle form submission
+        reviewFormElement.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (!checkAuth()) {
+                document.getElementById('alertMessage').textContent = 'Please login to submit a review';
+                document.getElementById('alertPopup').classList.add('open-pop');
+                document.getElementById('popupOverlay').style.display = 'block';
+                return;
+            }
+
+            if (selectedRating === 0) {
+                document.getElementById('alertMessage').textContent = 'Please select a rating';
+                document.getElementById('alertPopup').classList.add('open-pop');
+                document.getElementById('popupOverlay').style.display = 'block';
+                return;
+            }
+
+            try {
+                const reviewData = {
+                    rating: selectedRating,
+                    comment: document.getElementById('reviewText').value
+                };
+
+                console.log('Submitting review:', reviewData); // Debug log
+
+                const response = await authFetch(`/marketplace/list/${currentListingId}/reviews`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(reviewData)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || 'Failed to submit review');
+                }
+
+                // Reset and show success
+                resetForm();
+                reviewForm.style.display = 'none';
+                reviewsList.style.display = 'block';
+                document.querySelector('.rating-bars').style.display = 'flex';
+
+                // Show success message with new success popup
+                showSuccess('Review submitted successfully!');
+
+                // Refresh reviews
+                await fetchAndDisplayReviews(currentListingId);
+
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                document.getElementById('alertMessage').textContent = error.message;
+                document.getElementById('alertPopup').classList.add('open-pop');
+                document.getElementById('popupOverlay').style.display = 'block';
+            }
+        });
+
+        function updateStars(rating) {
+            ratingStars.forEach((star, index) => {
+                star.className = index < rating ? 'fas fa-star' : 'far fa-star';
+            });
+        }
+
+        function updateRatingText(rating) {
+            const ratingMessages = {
+                1: 'Poor',
+                2: 'Fair',
+                3: 'Good',
+                4: 'Very Good',
+                5: 'Excellent'
+            };
+            ratingText.textContent = ratingMessages[rating] || 'Click to rate';
+        }
+
+        function resetForm() {
+            selectedRating = 0;
+            updateStars(0);
+            ratingText.textContent = 'Click to rate';
+            reviewFormElement.reset();
+        }
+
+        // Placeholder for your API call
+        async function submitReview(data) {
+            try {
+                const response = await authFetch('/api/reviews', {
+                    method: 'POST',
+                    body: data
+                });
+
+                return response.json();
+            } catch (error) {
+                throw new Error('Failed to submit review');
+            }
+        }
+    }
+
+    // Add this to your existing JavaScript
+    
+
+    // Add this to your fetchAndDisplayReviews function
+    function updateRatingStats(reviews) {
+        if (!reviews || reviews.length === 0) return;
+    
+        const totalReviews = reviews.length;
+        const ratingCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        let ratingSum = 0;
+    
+        // Count ratings
+        reviews.forEach(review => {
+            ratingCounts[review.rating] = (ratingCounts[review.rating] || 0) + 1;
+            ratingSum += review.rating;
+        });
+    
+        // Update rating bars
+        for (let rating = 1; rating <= 5; rating++) {
+            const count = ratingCounts[rating] || 0;
+            const percentage = (count / totalReviews) * 100;
+            const bar = document.querySelector(`.rating-bar[data-rating="${rating}"] .bar`);
+            const countElement = document.querySelector(`.rating-bar[data-rating="${rating}"] .count`);
+            
+            if (bar) bar.style.width = `${percentage}%`;
+            if (countElement) countElement.textContent = `${Math.round(percentage)}%`;
+        }
+    
+        // Update average rating display
+        const averageRating = ratingSum / totalReviews;
+        document.querySelector('.rating-number').textContent = averageRating.toFixed(1);
+        document.querySelector('.total-reviews').textContent = `${totalReviews} ${totalReviews === 1 ? 'review' : 'reviews'}`;
+        document.querySelector('.rating-stars').innerHTML = generateStarRating(averageRating);
+    }
+
+    // Add this new function to generate star HTML
+    function generateStarRating(rating) {
+        let stars = '';
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 >= 0.5;
+
+        // Add full stars
+        for (let i = 0; i < fullStars; i++) {
+            stars += '<i class="fas fa-star"></i>';
+        }
+
+        // Add half star if needed
+        if (hasHalfStar) {
+            stars += '<i class="fas fa-star-half-alt"></i>';
+        }
+
+        // Add empty stars
+        const emptyStars = 5 - Math.ceil(rating);
+        for (let i = 0; i < emptyStars; i++) {
+            stars += '<i class="far fa-star"></i>';
+        }
+
+        return stars;
+    }
+
+    // Modify the contact button display
+    document.querySelector('.contact-button').addEventListener('click', function(e) {
+        if (!checkAuth()) {
+            e.preventDefault();
+            document.getElementById('alertMessage').textContent = 'Please login to view contact information';
+            document.getElementById('alertPopup').classList.add('open-pop');
+            document.getElementById('popupOverlay').style.display = 'block';
+            return;
+        }
+        contactPopup.style.display = 'flex';
+    });
+
+    // Update the add review button event listener
+    document.querySelector('.add-review-btn').addEventListener('click', function(e) {
+        if (!checkAuth()) {
+            e.preventDefault();
+            // Show a more friendly message
+            document.getElementById('alertMessage').textContent = 'Please login to add a review. You can continue browsing listings.';
+            document.getElementById('alertPopup').classList.add('open-pop');
+            document.getElementById('popupOverlay').style.display = 'block';
+            return;
+        }
+        reviewsList.style.display = 'none';
+        reviewForm.style.display = 'block';
+        document.querySelector('.rating-bars').style.display = 'none';
+    });
+
+    // Update the closeAlertPopup function to not redirect for reviews
+    function closeAlertPopup() {
+        document.getElementById('alertPopup').classList.remove('open-pop');
+        document.getElementById('popupOverlay').style.display = 'none';
+    }
+
+    // Add these helper functions
+    function showSuccess(message) {
+        document.getElementById('successMessage').textContent = message;
+        document.getElementById('successPopup').classList.add('open-pop');
+        document.getElementById('popupOverlay').style.display = 'block';
+    }
+
+    function closeSuccessPopup() {
+        document.getElementById('successPopup').classList.remove('open-pop');
+        document.getElementById('popupOverlay').style.display = 'none';
+    }
+
+    // Update existing showAlert function to be more specific for errors
+    function showAlert(message) {
+        document.getElementById('alertMessage').textContent = message;
+        document.getElementById('alertPopup').classList.add('open-pop');
+        document.getElementById('popupOverlay').style.display = 'block';
+    }
+
+    // Update the listing card click handler
+    document.querySelector('.listing-cards-container').addEventListener('click', async function(e) {
+        const listingCard = e.target.closest('.listing-card');
+        if (listingCard && !e.target.classList.contains('favorite-icon')) {
+            currentListingId = listingCard.dataset.id;
+            console.log('Current listing ID:', currentListingId);
+            
+            try {
+                // Use authFetch instead of regular fetch
+                const response = await authFetch(`/marketplace/list/${currentListingId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch listing details');
+                }
+                
+                const listing = await response.json();
+                console.log('Listing details:', listing);
+
+                // Update listing details
+                const detailImage = document.getElementById('listing-detail-image');
+                const priceElement = document.querySelector('.listing-price-section .price');
+                const quantityElement = document.querySelector('.listing-price-section .quantity');
+                
+                if (detailImage) detailImage.src = listing.imageUrl || '/images/default.jpg';
+                if (priceElement) priceElement.textContent = `₹${listing.price}/kg`;
+                if (quantityElement) quantityElement.textContent = `Quantity: ${listing.quantity} kg`;
+                
+                document.getElementById('listing-description-text').textContent = listing.description || 'No description available';
+
+                // Update seller information
+                if (listing.sellerId) {
+                    const sellerName = `${listing.sellerId.firstName || ''} ${listing.sellerId.lastName || ''}`.trim();
+                    const sellerLocation = `${listing.sellerId.city || ''}, ${listing.sellerId.state || ''}`.trim();
+                    
+                    document.getElementById('seller-name').textContent = sellerName || 'Seller Name Not Available';
+                    document.getElementById('seller-location').textContent = `Location: ${sellerLocation}` || 'Location Not Available';
+                    document.getElementById('full-name').textContent = sellerName;
+                    document.getElementById('phone-number').textContent = listing.sellerId.phoneNo || 'Phone Not Available';
+                    document.getElementById('full-address').textContent = sellerLocation;
+                }
+
+                // Show details view
+                mainContent.style.display = 'none';
+                listingDetailsView.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error fetching listing details:', error);
+                showAlert('Failed to load listing details. Please try again.');
+            }
+        }
+    });
+
+    // Add this helper function to check if elements exist
+    function updateElementText(id, text, defaultText = '') {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = text || defaultText;
+        }
+    }
+
+    // Update the listing card click handler and favorites functionality
+    document.querySelector('.listing-cards-container').addEventListener('click', async function(e) {
+        // Handle favorite button clicks
+        const favoriteBtn = e.target.closest('.favorite-btn');
+        if (favoriteBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            const listingId = favoriteBtn.closest('.listing-card').dataset.id;
+            await handleFavoriteClick(favoriteBtn, listingId);
+            return;
+        }
+
+        // Handle listing card clicks
+        const listingCard = e.target.closest('.listing-card');
+        if (listingCard) {
+            currentListingId = listingCard.dataset.id;
+            await handleListingCardClick(currentListingId);
+        }
+    });
+
+    // Add these helper functions
+    async function handleFavoriteClick(button, listingId) {
+        if (!checkAuth()) {
+            showAlert('Please login to add items to favorites');
+            return;
+        }
+
+        try {
+            const isActive = button.classList.contains('active');
+            const method = isActive ? 'DELETE' : 'POST';
+            
+            const response = await authFetch(`/marketplace/favourites/${listingId}`, {
+                method: method
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update favorite');
+            }
+
+            // Toggle button state
+            button.classList.toggle('active');
+            const icon = button.querySelector('i');
+            icon.classList.toggle('far');
+            icon.classList.toggle('fas');
+
+            // Show success message
+            showSuccess(isActive ? 'Removed from favorites' : 'Added to favorites');
+        } catch (error) {
+            console.error('Error updating favorite:', error);
+            showAlert('Failed to update favorites');
+        }
+    }
+
+    async function handleListingCardClick(listingId) {
+        try {
+            // Use regular fetch since this is a public endpoint
+            const response = await fetch(`/marketplace/list/${listingId}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch listing details');
+            }
+
+            const listing = await response.json();
+            console.log('Listing details:', listing);
+
+            // Update listing details
+            updateListingDetails(listing);
+
+            // Show details view
+            document.querySelector('.main-content').style.display = 'none';
+            document.querySelector('.listing-details-view').style.display = 'block';
+
+            // Only fetch reviews if they exist
+            await fetchAndDisplayReviews(listingId);
+
+            // Update UI elements based on auth state
+            const contactButton = document.querySelector('.contact-button');
+            const addReviewBtn = document.querySelector('.add-review-btn');
+            
+            if (checkAuth()) {
+                contactButton?.classList.remove('disabled');
+                addReviewBtn?.classList.remove('disabled');
+            } else {
+                contactButton?.classList.add('disabled');
+                addReviewBtn?.classList.add('disabled');
+                // Add login prompts if needed
+                contactButton?.setAttribute('title', 'Please login to contact seller');
+                addReviewBtn?.setAttribute('title', 'Please login to write a review');
+            }
+        } catch (error) {
+            console.error('Error fetching listing details:', error);
+            showAlert('Failed to load listing details. Please try again.');
+        }
+    }
+
+    function updateListingDetails(listing) {
+        // Update image
+        const detailImage = document.getElementById('listing-detail-image');
+        if (detailImage) {
+            detailImage.src = listing.imageUrl || '/images/default.jpg';
+        }
+
+        // Update price and quantity
+        const priceSection = document.querySelector('.listing-price-section');
+        if (priceSection) {
+            priceSection.innerHTML = `
+                <div class="price">₹${listing.price}/kg</div>
+                <div class="quantity">Quantity: ${listing.quantity} kg</div>
+            `;
+        }
+
+        // Update description
+        document.getElementById('listing-description-text').textContent = 
+            listing.description || 'No description available';
+
+        // Update seller information
+        if (listing.sellerId) {
+            const sellerName = `${listing.sellerId.firstName || ''} ${listing.sellerId.lastName || ''}`.trim();
+            const sellerLocation = `${listing.sellerId.city || ''}, ${listing.sellerId.state || ''}`.trim();
+            
+            updateElementText('seller-name', sellerName, 'Seller Name Not Available');
+            updateElementText('seller-location', `Location: ${sellerLocation}`, 'Location Not Available');
+            updateElementText('full-name', sellerName);
+            updateElementText('phone-number', listing.sellerId.phoneNo, 'Phone Not Available');
+            updateElementText('full-address', sellerLocation);
+        }
+    }
+
+    // Add at the top of your script tag
+    let selectedRating = 0;
+    let currentListingId = null;
+
+    // Initialize review system
+    document.addEventListener('DOMContentLoaded', function() {
+        const reviewElements = {
+            addReviewBtn: document.querySelector('.add-review-btn'),
+            reviewsList: document.querySelector('.reviews-list'),
+            reviewForm: document.querySelector('.review-form-section'),
+            backToReviewsBtn: document.querySelector('.back-to-reviews-btn'),
+            ratingStars: document.querySelectorAll('.interactive-stars i'),
+            ratingText: document.querySelector('.rating-text'),
+            reviewFormElement: document.getElementById('reviewForm'),
+            ratingBars: document.querySelector('.rating-bars')
+        };
+
+        // Toggle between review list and form
+        reviewElements.addReviewBtn?.addEventListener('click', function() {
+            if (!checkAuth()) {
+                showAlert('Please login to submit a review');
+                return;
+            }
+            reviewElements.reviewsList.style.display = 'none';
+            reviewElements.reviewForm.style.display = 'block';
+            reviewElements.ratingBars.style.display = 'none';
+        });
+
+        reviewElements.backToReviewsBtn?.addEventListener('click', function() {
+            resetForm();
+            reviewElements.reviewForm.style.display = 'none';
+            reviewElements.reviewsList.style.display = 'block';
+            reviewElements.ratingBars.style.display = 'flex';
+        });
+
+        // Star rating functionality
+        reviewElements.ratingStars.forEach(star => {
+            star.addEventListener('mouseover', function() {
+                const rating = parseInt(this.dataset.rating);
+                updateStars(rating);
+                updateRatingText(rating);
+            });
+
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.dataset.rating);
+                updateStars(selectedRating);
+                updateRatingText(selectedRating);
+            });
+
+            star.addEventListener('mouseleave', function() {
+                updateStars(selectedRating);
+                updateRatingText(selectedRating);
+            });
+        });
+
+        // Review form submission
+        reviewElements.reviewFormElement?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (!checkAuth()) {
+                showAlert('Please login to submit a review');
+                return;
+            }
+
+            if (!selectedRating) {
+                showAlert('Please select a rating');
+                return;
+            }
+
+            try {
+                const response = await authFetch(`/marketplace/list/${currentListingId}/reviews`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        rating: selectedRating,
+                        comment: document.getElementById('reviewText').value
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to submit review');
+                }
+
+                showSuccess('Review submitted successfully!');
+                resetForm();
+                reviewElements.reviewForm.style.display = 'none';
+                reviewElements.reviewsList.style.display = 'block';
+                reviewElements.ratingBars.style.display = 'flex';
+                
+
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                showAlert(error.message);
+            }
+        });
+
+        // Helper functions
+        function updateStars(rating) {
+            reviewElements.ratingStars.forEach((star, index) => {
+                star.className = index < rating ? 'fas fa-star' : 'far fa-star';
+            });
+        }
+
+        function updateRatingText(rating) {
+            const messages = {
+                0: 'Click to rate',
+                1: 'Poor',
+                2: 'Fair',
+                3: 'Good',
+                4: 'Very Good',
+                5: 'Excellent'
+            };
+            reviewElements.ratingText.textContent = messages[rating] || 'Click to rate';
+        }
+
+        function resetForm() {
+            selectedRating = 0;
+            updateStars(0);
+            updateRatingText(0);
+            reviewElements.reviewFormElement.reset();
+        }
+    });
+
+    // Review fetching and display
+    async function fetchAndDisplayReviews(listingId) {
+        try {
+            // Use regular fetch instead of authFetch since reviews should be public
+            const response = await fetch(`/marketplace/list/${listingId}/reviews`);
+            const data = await response.json();
+
+            if (!data.success || !data.reviews || !data.reviews.length) {
+                showEmptyReviewState();
+                return;
+            }
+
+            updateReviewStats(data.stats);
+            displayReviews(data.reviews);
+        } catch (error) {
+            console.error('Error fetching reviews:', error);
+            showAlert('Failed to load reviews');
+        }
+    }
+
+    function showEmptyReviewState() {
+        const reviewsList = document.querySelector('.reviews-list');
+        document.querySelector('.rating-number').textContent = '0.0';
+        document.querySelector('.total-reviews').textContent = '0 reviews';
+        document.querySelector('.rating-stars').innerHTML = generateStarRating(0);
+        reviewsList.innerHTML = '<p class="no-reviews">No reviews yet. Be the first to review!</p>';
+    }
+
+    function updateReviewStats(stats) {
+        const { averageRating, total, distribution } = stats;
+        document.querySelector('.rating-number').textContent = averageRating;
+        document.querySelector('.total-reviews').textContent = `${total} ${total === 1 ? 'review' : 'reviews'}`;
+        document.querySelector('.rating-stars').innerHTML = generateStarRating(averageRating);
+
+        // Update distribution bars
+        Object.entries(distribution).forEach(([rating, count]) => {
+            const percentage = (count / total) * 100;
+            const bar = document.querySelector(`.rating-bar[data-rating="${rating}"] .bar`);
+            const countElement = document.querySelector(`.rating-bar[data-rating="${rating}"] .count`);
+            
+            if (bar) bar.style.width = `${percentage}%`;
+            if (countElement) countElement.textContent = `${Math.round(percentage)}%`;
+        });
+    }
+
+    function displayReviews(reviews) {
+        const reviewsList = document.querySelector('.reviews-list');
+        reviewsList.innerHTML = reviews.map(review => `
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-details">
+                            <h4>${review.userId.firstName} ${review.userId.lastName}</h4>
+                            <div class="review-stars">${generateStarRating(review.rating)}</div>
+                        </div>
+                    </div>
+                    <span class="review-date">${new Date(review.createdAt).toLocaleDateString()}</span>
+                </div>
+                <p class="review-text">${review.comment}</p>
+            </div>
+        `).join('');
+    }
+
+    function generateStarRating(rating) {
+        const fullStar = '<i class="fas fa-star"></i>';
+        const halfStar = '<i class="fas fa-star-half-alt"></i>';
+        const emptyStar = '<i class="far fa-star"></i>';
+        
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 >= 0.5;
+        const emptyStars = 5 - Math.ceil(rating);
+        
+        return `${fullStar.repeat(fullStars)}${hasHalfStar ? halfStar : ''}${emptyStar.repeat(emptyStars)}`;
+    }
+    </script>
+
+    <div class="popup-overlay" id="popupOverlay"></div>
+    <div class="popup alert-popup" id="alertPopup">
+        <img src="/images/alert.png" alt="Alert">
+        <h2>Session Expired</h2>
+        <p id="alertMessage"></p>
+        <button type="button" onclick="closeAlertPopup()">OK</button>
+    </div>
+    <!-- Add this right after your existing alert popup div -->
+    <div class="popup success-popup" id="successPopup">
+        <img src="/images/tick.png" alt="Success">
+        <h2>Success!</h2>
+        <p id="successMessage"></p>
+        <button type="button" onclick="closeSuccessPopup()">OK</button>
+    </div>
+</body>
+</html>
